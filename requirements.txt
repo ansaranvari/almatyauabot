@@ -1,0 +1,29 @@
+# Core
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-dotenv==1.0.0
+
+# Bot
+aiogram==3.4.1
+aiohttp==3.9.1
+
+# Database
+sqlalchemy[asyncio]==2.0.25
+asyncpg==0.29.0
+geoalchemy2==0.14.3
+alembic==1.13.1
+
+# Cache & Tasks
+redis==5.0.1
+aioredis==2.0.1
+apscheduler==3.10.4
+
+# Geospatial
+shapely==2.0.2
+
+# Utils
+httpx==0.26.0
+pydantic-settings==2.1.0
+
+# Charts
+matplotlib==3.8.2

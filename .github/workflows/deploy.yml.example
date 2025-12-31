@@ -1,0 +1,36 @@
+# Optional: GitHub Actions for automated deployment
+# Rename to deploy.yml to enable
+
+name: Deploy to Oracle Cloud
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy to Oracle Cloud
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.ORACLE_VM_IP }}
+        username: ubuntu
+        key: ${{ secrets.ORACLE_SSH_KEY }}
+        script: |
+          cd ~/qazairbot
+          git pull origin main
+          docker compose -f docker-compose.prod.yml pull
+          docker compose -f docker-compose.prod.yml up -d --build
+          docker system prune -f
+
+# Setup required secrets in GitHub:
+# Settings → Secrets and variables → Actions → New repository secret
+#
+# ORACLE_VM_IP: Your VM's public IP address
+# ORACLE_SSH_KEY: Your private SSH key content

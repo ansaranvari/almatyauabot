@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "Bash(docker compose logs:*)",
+      "Bash(docker compose:*)",
+      "WebFetch(domain:api.air.org.kz)",
+      "Bash(docker ps:*)",
+      "Bash(docker exec:*)"
+    ]
+  }
+}

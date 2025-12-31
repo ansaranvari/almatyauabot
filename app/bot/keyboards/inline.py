@@ -1,0 +1,84 @@
+"""Inline keyboards for air quality info"""
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from app.core.locales import get_text
+
+
+def get_air_quality_info_keyboard(lang: str, station_id: int = None, lat: float = None, lon: float = None, user_lat: float = None, user_lon: float = None, show_subscribe: bool = True, show_favorite: bool = True) -> InlineKeyboardMarkup:
+    """
+    Get inline keyboard with info buttons for pollutants
+
+    Args:
+        lang: Language code (ru/kk)
+        station_id: Station ID for show location button
+        lat: Station latitude
+        lon: Station longitude
+        user_lat: User's latitude (for subscribe/favorite buttons)
+        user_lon: User's longitude (for subscribe/favorite buttons)
+        show_subscribe: Whether to show subscribe button
+        show_favorite: Whether to show favorite button
+
+    Returns:
+        InlineKeyboardMarkup with info buttons
+    """
+    # Compact button layout - feels more integrated with the message
+    # Include station_id in callback data for return functionality
+    station_param = f":{station_id}" if station_id else ""
+    buttons = [
+        [
+            InlineKeyboardButton(
+                text="ℹ️ PM2.5",
+                callback_data=f"info:pm25{station_param}"
+            ),
+            InlineKeyboardButton(
+                text="ℹ️ PM10",
+                callback_data=f"info:pm10{station_param}"
+            ),
+            InlineKeyboardButton(
+                text="ℹ️ PM1.0",
+                callback_data=f"info:pm1{station_param}"
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="ℹ️ AQI",
+                callback_data=f"info:aqi{station_param}"
+            ),
+            InlineKeyboardButton(
+                text="📊 График 24ч" if lang == "ru" else "📊 24с график",
+                callback_data=f"chart:24h{station_param}"
+            ),
+        ]
+    ]
+
+    # Add subscribe to this location button if user location is provided and not already subscribed
+    if user_lat and user_lon and show_subscribe:
+        subscribe_text = "🔔 Подписаться на это место" if lang == "ru" else "🔔 Бұл жерге жазылу"
+        buttons.append([
+            InlineKeyboardButton(
+                text=subscribe_text,
+                callback_data=f"quick_subscribe:{user_lat}:{user_lon}"
+            )
+        ])
+
+    # Add favorite button if user location is provided and not already favorited
+    if user_lat and user_lon and show_favorite:
+        add_fav_text = "⭐ Добавить в избранное" if lang == "ru" else "⭐ Таңдаулыға қосу"
+        buttons.append([
+            InlineKeyboardButton(
+                text=add_fav_text,
+                callback_data=f"add_favorite:{user_lat}:{user_lon}"
+            )
+        ])
+
+    # Add show station location button if station info is provided
+    if station_id and lat and lon:
+        show_station_text = "📍 Показать, где находится датчик" if lang == "ru" else "📍 Датчик қайда екенін көрсету"
+        buttons.append([
+            InlineKeyboardButton(
+                text=show_station_text,
+                callback_data=f"show_station_loc:{station_id}:{lat}:{lon}"
+            )
+        ])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+    return keyboard
