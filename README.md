@@ -25,6 +25,17 @@ A production-ready Telegram bot that provides real-time air quality monitoring f
 - 📈 **Historical data tracking** - Store readings for trend analysis
 - 🐳 **Docker deployment** - Production-ready containerized setup
 
+## 📊 Data Coverage
+
+**Current Coverage: Almaty Only** 🏙️
+
+- **170 active sensors** in Almaty and surrounding areas
+- **Real-time updates** every hour from air.org.kz
+- **Pollutants tracked:** PM2.5, PM10, PM1.0, AQI
+- **Future expansion:** Bot will automatically support other cities when sensors become available
+
+> ⚠️ **Note:** Users outside Almaty will see a helpful message with distance to nearest sensor. The bot is ready to scale to other Kazakhstan cities as soon as air.org.kz adds more sensors.
+
 ## Tech Stack
 
 - **Python 3.11+**
