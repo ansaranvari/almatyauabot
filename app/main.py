@@ -59,14 +59,38 @@ async def lifespan(app: FastAPI):
     logger.info("Connecting to Redis")
     await cache.connect()
 
-    # Set webhook
+    # Set webhook with retry logic
     if settings.WEBHOOK_URL:
         webhook_url = f"{settings.WEBHOOK_URL}{settings.WEBHOOK_PATH}"
         logger.info(f"Setting webhook: {webhook_url}")
-        await bot.set_webhook(
-            url=webhook_url,
-            drop_pending_updates=True
-        )
+
+        # Try setting webhook with retries
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                webhook_info = await bot.get_webhook_info()
+                logger.info(f"Current webhook URL: {webhook_info.url}")
+
+                await bot.set_webhook(
+                    url=webhook_url,
+                    drop_pending_updates=True
+                )
+
+                # Verify webhook was set
+                webhook_info = await bot.get_webhook_info()
+                if webhook_info.url == webhook_url:
+                    logger.info(f"✅ Webhook successfully set and verified: {webhook_url}")
+                    break
+                else:
+                    logger.warning(f"⚠️ Webhook verification failed. Expected: {webhook_url}, Got: {webhook_info.url}")
+                    if attempt < max_retries - 1:
+                        await asyncio.sleep(2)
+            except Exception as e:
+                logger.error(f"❌ Attempt {attempt + 1}/{max_retries} - Failed to set webhook: {e}")
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(2)
+                else:
+                    logger.critical(f"🚨 CRITICAL: Failed to set webhook after {max_retries} attempts. Bot will not receive updates!")
     else:
         logger.warning("WEBHOOK_URL not set, webhook not configured")
 
