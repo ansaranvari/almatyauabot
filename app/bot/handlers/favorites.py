@@ -75,6 +75,10 @@ async def cmd_my_favorites(message: Message, lang: str, user_id: int, **kwargs):
 async def handle_check_favorite(callback: CallbackQuery, lang: str, user_id: int, **kwargs):
     """Check air quality for a favorite location"""
     try:
+        # Answer callback immediately to show loading indicator
+        loading_text = "🔍 Загрузка..." if lang == "ru" else "🔍 Жүктеу..."
+        await callback.answer(loading_text)
+
         favorite_id = int(callback.data.split(":")[1])
 
         async with AsyncSessionLocal() as db:
@@ -100,7 +104,6 @@ async def handle_check_favorite(callback: CallbackQuery, lang: str, user_id: int
                     get_text(lang, "no_stations_found"),
                     reply_markup=get_main_menu_keyboard(lang)
                 )
-                await callback.answer()
                 return
 
             # Calculate distance
@@ -144,8 +147,6 @@ async def handle_check_favorite(callback: CallbackQuery, lang: str, user_id: int
             await AirQualityService.log_user_query(
                 db, user_id, favorite.latitude, favorite.longitude, station_id=station.station_id
             )
-
-            await callback.answer()
 
     except Exception as e:
         logger.error(f"Error checking favorite: {e}", exc_info=True)

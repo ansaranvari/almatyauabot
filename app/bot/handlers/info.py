@@ -125,10 +125,13 @@ async def info_aqi_callback(callback: CallbackQuery, lang: str, **kwargs):
 async def return_to_report_callback(callback: CallbackQuery, lang: str, user_id: int, **kwargs):
     """Handle return to report button click - re-send air quality report"""
     try:
+        # Answer callback immediately to show loading indicator
+        loading_text = "🔍 Загрузка..." if lang == "ru" else "🔍 Жүктеу..."
+        await callback.answer(loading_text)
+
         # Extract station_id from callback data
         parts = callback.data.split(":")
         if len(parts) < 2:
-            await callback.answer("❌ Error", show_alert=True)
             return
 
         station_id = int(parts[1])
@@ -144,10 +147,9 @@ async def return_to_report_callback(callback: CallbackQuery, lang: str, user_id:
             result = await db.execute(
                 select(AirQualityStation).where(AirQualityStation.id == station_id)
             )
-            station = result.scalar_one_or_none()
+            station = result.scalars().first()
 
             if not station:
-                await callback.answer("❌ Станция не найдена", show_alert=True)
                 return
 
             # Check if user already has subscription or favorite for this location
@@ -204,14 +206,9 @@ async def return_to_report_callback(callback: CallbackQuery, lang: str, user_id:
                 )
             )
 
-        await callback.answer()
-
     except Exception as e:
         logger.error(f"Error returning to report: {e}", exc_info=True)
-        await callback.answer(
-            "❌ Произошла ошибка" if lang == "ru" else "❌ Қате орын алды",
-            show_alert=True
-        )
+        # Callback already answered at start, just log the error
 
 
 @router.callback_query(F.data.startswith("show_station_loc:"))
