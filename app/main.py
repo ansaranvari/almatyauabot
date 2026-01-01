@@ -161,8 +161,9 @@ async def webhook(request: Request) -> Response:
 
 
 @app.get("/health")
+@app.head("/health")
 async def health():
-    """Detailed health check"""
+    """Detailed health check - supports both GET and HEAD methods"""
     return {
         "status": "healthy",
         "components": {
