@@ -54,7 +54,7 @@ class I18nMiddleware(BaseMiddleware):
             result = await db.execute(
                 select(DBUser).where(DBUser.id == user_id)
             )
-            db_user = result.scalar_one_or_none()
+            db_user = result.scalars().first()  # Use first() to handle duplicate rows gracefully
 
             if db_user:
                 # User exists in database
