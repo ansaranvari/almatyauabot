@@ -88,7 +88,7 @@ async def handle_check_favorite(callback: CallbackQuery, lang: str, user_id: int
                     FavoriteLocation.user_id == user_id
                 )
             )
-            favorite = result.scalar_one_or_none()
+            favorite = result.scalars().first()
 
             if not favorite:
                 await callback.answer("❌ Not found", show_alert=True)
@@ -166,7 +166,7 @@ async def handle_delete_favorite(callback: CallbackQuery, lang: str, user_id: in
                     FavoriteLocation.user_id == user_id
                 )
             )
-            favorite = result.scalar_one_or_none()
+            favorite = result.scalars().first()
 
             if not favorite:
                 await callback.answer("❌ Not found", show_alert=True)
@@ -244,7 +244,7 @@ async def handle_favorite_name(message: Message, state: FSMContext, lang: str, u
             )
         )
 
-        if existing.scalar_one_or_none():
+        if existing.scalars().first():
             await message.answer(
                 get_text(lang, "favorite_already_exists"),
                 reply_markup=get_main_menu_keyboard(lang)

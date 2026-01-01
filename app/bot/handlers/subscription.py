@@ -53,7 +53,7 @@ async def handle_quick_subscribe(callback: CallbackQuery, state: FSMContext, lan
             result = await db.execute(
                 select(User).where(User.id == user_id)
             )
-            user = result.scalar_one_or_none()
+            user = result.scalars().first()
 
             if user and not user.seen_subscribe_onboarding:
                 # Store location for after onboarding
@@ -90,7 +90,7 @@ async def handle_quick_subscribe(callback: CallbackQuery, state: FSMContext, lan
                 )
             )
 
-            if existing_sub.scalar_one_or_none():
+            if existing_sub.scalars().first():
                 await callback.answer(
                     get_text(lang, "subscription_exists"),
                     show_alert=True
@@ -156,7 +156,7 @@ async def cmd_subscribe(message: Message, state: FSMContext, lang: str, user_id:
         result = await db.execute(
             select(User).where(User.id == user_id)
         )
-        user = result.scalar_one_or_none()
+        user = result.scalars().first()
 
         if user and not user.seen_subscribe_onboarding:
             # Show onboarding message with inline keyboard only
@@ -193,7 +193,7 @@ async def handle_onboarding_subscribe_done(callback: CallbackQuery, state: FSMCo
         result = await db.execute(
             select(User).where(User.id == user_id)
         )
-        user = result.scalar_one_or_none()
+        user = result.scalars().first()
 
         if user:
             user.seen_subscribe_onboarding = True
@@ -219,7 +219,7 @@ async def handle_onboarding_subscribe_quick_done(callback: CallbackQuery, state:
         result = await db.execute(
             select(User).where(User.id == user_id)
         )
-        user = result.scalar_one_or_none()
+        user = result.scalars().first()
 
         if user:
             user.seen_subscribe_onboarding = True
@@ -305,7 +305,7 @@ async def handle_subscription_location(message: Message, state: FSMContext, lang
             )
         )
 
-        if existing_sub.scalar_one_or_none():
+        if existing_sub.scalars().first():
             await message.answer(
                 get_text(lang, "subscription_exists"),
                 reply_markup=get_main_menu_keyboard(lang)
@@ -685,7 +685,7 @@ async def handle_edit_subscription(callback: CallbackQuery, state: FSMContext, l
                     Subscription.user_id == user_id  # Security check
                 )
             )
-            subscription = result.scalar_one_or_none()
+            subscription = result.scalars().first()
 
             if not subscription:
                 await callback.answer(
@@ -843,7 +843,7 @@ async def handle_edit_duration_selection(callback: CallbackQuery, state: FSMCont
                 Subscription.user_id == user_id
             )
         )
-        subscription = result.scalar_one_or_none()
+        subscription = result.scalars().first()
 
         if not subscription:
             await callback.answer(
@@ -901,7 +901,7 @@ async def handle_edit_quiet_hours_selection(callback: CallbackQuery, state: FSMC
                     Subscription.user_id == user_id
                 )
             )
-            subscription = result.scalar_one_or_none()
+            subscription = result.scalars().first()
 
             if not subscription:
                 await callback.answer(
@@ -979,7 +979,7 @@ async def handle_edit_custom_quiet_hours(message: Message, state: FSMContext, la
                 Subscription.user_id == user_id
             )
         )
-        subscription = result.scalar_one_or_none()
+        subscription = result.scalars().first()
 
         if not subscription:
             await message.answer(
@@ -1030,7 +1030,7 @@ async def handle_safety_net_activation(callback: CallbackQuery, lang: str, user_
                     Subscription.user_id == user_id  # Security check
                 )
             )
-            subscription = result.scalar_one_or_none()
+            subscription = result.scalars().first()
 
             if not subscription:
                 await callback.answer(
@@ -1062,7 +1062,7 @@ async def handle_safety_net_activation(callback: CallbackQuery, lang: str, user_
                 )
             )
 
-            if existing_session.scalar_one_or_none():
+            if existing_session.scalars().first():
                 await callback.answer(
                     "ℹ️ Мониторинг уже активирован" if lang == "ru" else "ℹ️ Мониторинг қазірдің өзінде белсенді",
                     show_alert=True
@@ -1114,7 +1114,7 @@ async def handle_show_station(callback: CallbackQuery, lang: str, user_id: int, 
                     Subscription.user_id == user_id  # Security check
                 )
             )
-            subscription = result.scalar_one_or_none()
+            subscription = result.scalars().first()
 
             if not subscription:
                 await callback.answer(
@@ -1183,7 +1183,7 @@ async def handle_unsubscribe(callback: CallbackQuery, lang: str, user_id: int, *
                     Subscription.user_id == user_id  # Security: ensure it belongs to this user
                 )
             )
-            subscription = result.scalar_one_or_none()
+            subscription = result.scalars().first()
 
             if not subscription:
                 await callback.answer(

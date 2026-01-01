@@ -29,7 +29,7 @@ async def cmd_check_air(message: Message, lang: str, user_id: int, **kwargs):
         result = await db.execute(
             select(User).where(User.id == user_id)
         )
-        user = result.scalar_one_or_none()
+        user = result.scalars().first()
 
         if user and not user.seen_check_onboarding:
             # Show onboarding message with inline keyboard only
@@ -69,7 +69,7 @@ async def handle_onboarding_check_done(callback: CallbackQuery, lang: str, user_
         result = await db.execute(
             select(User).where(User.id == user_id)
         )
-        user = result.scalar_one_or_none()
+        user = result.scalars().first()
 
         if user:
             user.seen_check_onboarding = True
@@ -198,7 +198,7 @@ async def process_air_quality_check(message: Message, bot: Bot, lang: str, user_
                 )
             )
         )
-        has_subscription = existing_subscription.scalar_one_or_none() is not None
+        has_subscription = existing_subscription.scalars().first() is not None
 
         # Check for existing favorite within 100m
         existing_favorite = await db.execute(
@@ -211,7 +211,7 @@ async def process_air_quality_check(message: Message, bot: Bot, lang: str, user_
                 )
             )
         )
-        has_favorite = existing_favorite.scalar_one_or_none() is not None
+        has_favorite = existing_favorite.scalars().first() is not None
 
         # Format and send message with info buttons
         response_text = AirQualityService.format_air_quality_message(
@@ -248,7 +248,7 @@ async def process_air_quality_check(message: Message, bot: Bot, lang: str, user_
                 Subscription.is_active == True
             )
         )
-        has_any_subscription = existing_subscriptions.scalar_one_or_none() is not None
+        has_any_subscription = existing_subscriptions.scalars().first() is not None
 
         import random
         if random.random() < 0.3 and not has_any_subscription:
@@ -279,7 +279,7 @@ async def handle_favorite_button(message: Message, bot: Bot, lang: str, user_id:
                 FavoriteLocation.name == favorite_name
             )
         )
-        favorite = result.scalar_one_or_none()
+        favorite = result.scalars().first()
 
         if not favorite:
             await message.answer(

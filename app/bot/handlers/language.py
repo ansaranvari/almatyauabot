@@ -29,7 +29,7 @@ async def callback_language_select(callback: CallbackQuery, lang: str, user_id: 
         result = await db.execute(
             select(User).where(User.id == user_id)
         )
-        user = result.scalar_one_or_none()
+        user = result.scalars().first()
 
         if user:
             user.language_code = selected_lang

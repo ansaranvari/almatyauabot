@@ -210,7 +210,7 @@ async def send_expiration_notification(db: AsyncSession, bot: Bot, subscription:
         user_result = await db.execute(
             select(User).where(User.id == subscription.user_id)
         )
-        user = user_result.scalar_one_or_none()
+        user = user_result.scalars().first()
 
         if not user:
             logger.warning(f"User {subscription.user_id} not found")
@@ -263,7 +263,7 @@ async def send_clean_air_notification(
         user_result = await db.execute(
             select(User).where(User.id == subscription.user_id)
         )
-        user = user_result.scalar_one_or_none()
+        user = user_result.scalars().first()
 
         if not user:
             logger.warning(f"User {subscription.user_id} not found")
@@ -324,7 +324,7 @@ async def send_bad_air_notification(
         user_result = await db.execute(
             select(User).where(User.id == subscription.user_id)
         )
-        user = user_result.scalar_one_or_none()
+        user = user_result.scalars().first()
 
         if not user:
             logger.warning(f"User {subscription.user_id} not found")
@@ -381,7 +381,7 @@ async def process_safety_net_session(db: AsyncSession, bot: Bot, session: Safety
         sub_result = await db.execute(
             select(Subscription).where(Subscription.id == session.subscription_id)
         )
-        subscription = sub_result.scalar_one_or_none()
+        subscription = sub_result.scalars().first()
 
         if not subscription:
             logger.warning(f"Subscription {session.subscription_id} not found for safety net session {session.id}")
@@ -448,7 +448,7 @@ async def send_bad_air_alert(
         user_result = await db.execute(
             select(User).where(User.id == session.user_id)
         )
-        user = user_result.scalar_one_or_none()
+        user = user_result.scalars().first()
 
         if not user:
             logger.warning(f"User {session.user_id} not found")

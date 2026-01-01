@@ -171,7 +171,7 @@ async def return_to_report_callback(callback: CallbackQuery, lang: str, user_id:
                     )
                 )
             )
-            has_subscription = existing_subscription.scalar_one_or_none() is not None
+            has_subscription = existing_subscription.scalars().first() is not None
 
             # Check for existing favorite within 100m
             existing_favorite = await db.execute(
@@ -184,7 +184,7 @@ async def return_to_report_callback(callback: CallbackQuery, lang: str, user_id:
                     )
                 )
             )
-            has_favorite = existing_favorite.scalar_one_or_none() is not None
+            has_favorite = existing_favorite.scalars().first() is not None
 
             # Format and send air quality message (same as original)
             response_text = AirQualityService.format_air_quality_message(
@@ -241,7 +241,7 @@ async def show_station_location_callback(callback: CallbackQuery, lang: str, **k
             result = await db.execute(
                 select(AirQualityStation).where(AirQualityStation.id == station_id)
             )
-            station = result.scalar_one_or_none()
+            station = result.scalars().first()
 
             if station:
                 station_info = f"📍 <b>{station.name}</b>"
@@ -297,7 +297,7 @@ async def chart_24h_callback(callback: CallbackQuery, lang: str, user_id: int, *
             result = await db.execute(
                 select(AirQualityStation).where(AirQualityStation.id == station_id)
             )
-            station = result.scalar_one_or_none()
+            station = result.scalars().first()
 
             if not station:
                 await callback.message.answer(
