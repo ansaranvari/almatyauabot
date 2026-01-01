@@ -198,6 +198,26 @@ async def health():
     }
 
 
+@app.get("/webhook-status")
+async def webhook_status():
+    """Check current webhook configuration"""
+    try:
+        webhook_info = await bot.get_webhook_info()
+        return {
+            "status": "ok",
+            "webhook_url": webhook_info.url,
+            "has_webhook": bool(webhook_info.url),
+            "pending_updates": webhook_info.pending_update_count,
+            "last_error_date": webhook_info.last_error_date,
+            "last_error_message": webhook_info.last_error_message
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
 if __name__ == "__main__":
     import uvicorn
 
