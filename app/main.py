@@ -13,6 +13,7 @@ from app.db.database import init_db
 from app.services.cache import cache
 from app.services.sync import data_sync
 from app.services.subscription_checker import subscription_checker
+from app.services.webhook_monitor import webhook_monitor
 from app.bot.handlers import router
 from app.bot.middlewares.i18n import I18nMiddleware
 
@@ -60,6 +61,7 @@ async def lifespan(app: FastAPI):
     await cache.connect()
 
     # Set webhook with retry logic
+    webhook_url = None
     if settings.WEBHOOK_URL:
         webhook_url = f"{settings.WEBHOOK_URL}{settings.WEBHOOK_PATH}"
         logger.info(f"Setting webhook: {webhook_url}")
@@ -122,14 +124,27 @@ async def lifespan(app: FastAPI):
     subscription_checker.set_bot(bot)
     subscription_task = asyncio.create_task(subscription_checker.start_scheduler())
 
+    # Start webhook monitor in background (only if webhook is configured)
+    monitor_task = None
+    if webhook_url:
+        logger.info("Starting webhook monitor background task")
+        webhook_monitor.configure(bot, webhook_url, settings.BOT_TOKEN)
+        monitor_task = asyncio.create_task(webhook_monitor.start_monitor())
+
     yield
 
     # Shutdown
     logger.info("Shutting down application")
 
+    # Stop webhook monitor gracefully
+    webhook_monitor.stop()
+
     # Cancel background tasks
     sync_task.cancel()
     subscription_task.cancel()
+    if monitor_task:
+        monitor_task.cancel()
+
     try:
         await sync_task
     except asyncio.CancelledError:
@@ -138,6 +153,11 @@ async def lifespan(app: FastAPI):
         await subscription_task
     except asyncio.CancelledError:
         pass
+    if monitor_task:
+        try:
+            await monitor_task
+        except asyncio.CancelledError:
+            pass
 
     # Delete webhook
     await bot.delete_webhook(drop_pending_updates=True)
