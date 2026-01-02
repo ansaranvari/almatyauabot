@@ -149,8 +149,9 @@ app = FastAPI(
 
 
 @app.get("/")
+@app.head("/")
 async def root():
-    """Health check endpoint"""
+    """Health check endpoint - supports both GET and HEAD methods"""
     return {
         "status": "ok",
         "service": "QazAirbot",
