@@ -143,6 +143,13 @@ async def handle_check_favorite(callback: CallbackQuery, lang: str, user_id: int
                 )
             )
 
+            # Restore main menu keyboard
+            menu_text = "📋 Главное меню" if lang == "ru" else "📋 Басты мәзір"
+            await callback.message.answer(
+                menu_text,
+                reply_markup=get_main_menu_keyboard(lang)
+            )
+
             # Log query
             await AirQualityService.log_user_query(
                 db, user_id, favorite.latitude, favorite.longitude, station_id=station.station_id
