@@ -71,22 +71,34 @@ async def lifespan(app: FastAPI):
                 webhook_info = await bot.get_webhook_info()
                 logger.info(f"Current webhook URL: {webhook_info.url}")
 
-                await bot.set_webhook(
+                # Set webhook and get result
+                result = await bot.set_webhook(
                     url=webhook_url,
                     drop_pending_updates=True
                 )
+                logger.info(f"set_webhook() returned: {result}")
 
-                # Verify webhook was set
-                webhook_info = await bot.get_webhook_info()
-                if webhook_info.url == webhook_url:
+                # Wait a moment for Telegram to process
+                await asyncio.sleep(1)
+
+                # Verify webhook was set by making a fresh API call
+                verify_url = f"https://api.telegram.org/bot{settings.BOT_TOKEN}/getWebhookInfo"
+                import httpx
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(verify_url)
+                    webhook_data = response.json()
+                    actual_url = webhook_data.get("result", {}).get("url", "")
+                    logger.info(f"Direct API verification - webhook URL: {actual_url}")
+
+                if actual_url == webhook_url:
                     logger.info(f"✅ Webhook successfully set and verified: {webhook_url}")
                     break
                 else:
-                    logger.warning(f"⚠️ Webhook verification failed. Expected: {webhook_url}, Got: {webhook_info.url}")
+                    logger.warning(f"⚠️ Webhook verification failed. Expected: {webhook_url}, Got: {actual_url}")
                     if attempt < max_retries - 1:
                         await asyncio.sleep(2)
             except Exception as e:
-                logger.error(f"❌ Attempt {attempt + 1}/{max_retries} - Failed to set webhook: {e}")
+                logger.error(f"❌ Attempt {attempt + 1}/{max_retries} - Failed to set webhook: {e}", exc_info=True)
                 if attempt < max_retries - 1:
                     await asyncio.sleep(2)
                 else:
