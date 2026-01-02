@@ -209,6 +209,14 @@ async def return_to_report_callback(callback: CallbackQuery, lang: str, user_id:
                 )
             )
 
+            # Restore main menu keyboard with a small message
+            from app.bot.keyboards.reply import get_main_menu_keyboard
+            menu_text = "📋 Главное меню" if lang == "ru" else "📋 Басты мәзір"
+            await callback.message.answer(
+                menu_text,
+                reply_markup=get_main_menu_keyboard(lang)
+            )
+
     except Exception as e:
         logger.error(f"Error returning to report: {e}", exc_info=True)
         # Callback already answered at start, just log the error
