@@ -132,6 +132,9 @@ async def return_to_report_callback(callback: CallbackQuery, lang: str, user_id:
         # Extract station_id from callback data
         parts = callback.data.split(":")
         if len(parts) < 2:
+            # No station_id provided - just acknowledge
+            error_msg = "❌ Станция не найдена" if lang == "ru" else "❌ Станция табылмады"
+            await callback.message.answer(error_msg)
             return
 
         station_id = int(parts[1])
