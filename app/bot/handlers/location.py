@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.db.database import AsyncSessionLocal
 from app.services.air_quality import AirQualityService
+from app.services.analytics import analytics
 from app.core.locales import get_text
 from app.bot.keyboards.reply import get_location_keyboard, get_main_menu_keyboard
 from app.bot.keyboards.inline import get_air_quality_info_keyboard
@@ -23,6 +24,10 @@ async def cmd_check_air(message: Message, lang: str, user_id: int, **kwargs):
 
     Shows onboarding for first-time users, then prompts to send location
     """
+    # Track check air feature usage
+    await analytics.track_event(user_id, "check_air_clicked")
+    await analytics.increment_feature_usage("check_air", user_id)
+
     # Check if user has seen the onboarding and if they have favorites
     from app.db.models import User, FavoriteLocation
     async with AsyncSessionLocal() as db:

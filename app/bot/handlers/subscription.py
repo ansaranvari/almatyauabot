@@ -13,6 +13,7 @@ from app.db.database import AsyncSessionLocal
 from app.db.models import Subscription, SafetyNetSession
 from app.core.locales import get_text
 from app.bot.keyboards.reply import get_location_keyboard, get_main_menu_keyboard
+from app.services.analytics import analytics
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -493,6 +494,19 @@ async def create_subscription(message: Message, state: FSMContext, lang: str, us
 
         db.add(subscription)
         await db.commit()
+
+        # Track subscription creation
+        await analytics.track_event(
+            user_id,
+            "subscription_created",
+            event_data={
+                "duration": duration_choice,
+                "quiet_hours": f"{mute_start}-{mute_end}",
+                "latitude": latitude,
+                "longitude": longitude
+            }
+        )
+        await analytics.increment_feature_usage("subscribe", user_id)
 
         logger.info(f"User {user_id} subscribed: lat={latitude}, lon={longitude}, duration={duration_choice}, quiet={mute_start}-{mute_end}")
 

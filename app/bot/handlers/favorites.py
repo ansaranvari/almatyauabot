@@ -12,6 +12,7 @@ from app.db.models import FavoriteLocation
 from app.core.locales import get_text
 from app.bot.keyboards.reply import get_main_menu_keyboard
 from app.services.air_quality import AirQualityService
+from app.services.analytics import analytics
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -270,6 +271,14 @@ async def handle_favorite_name(message: Message, state: FSMContext, lang: str, u
 
         db.add(favorite)
         await db.commit()
+
+        # Track favorite creation
+        await analytics.track_event(
+            user_id,
+            "favorite_added",
+            event_data={"name": name, "latitude": latitude, "longitude": longitude}
+        )
+        await analytics.increment_feature_usage("favorites", user_id)
 
         await message.answer(
             get_text(lang, "favorite_added"),
