@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Almaty Aua Bot - Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-change {
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .stat-change.positive {
+            color: #27ae60;
+        }
+
+        .stat-change.negative {
+            color: #e74c3c;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .badge-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .section-title {
+            font-size: 24px;
+            margin: 40px 0 20px 0;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Almaty Aua Bot Analytics</h1>
+            <p class="subtitle">Real-time metrics and insights</p>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value">{{ total_users }}</div>
+                {% if today_stats %}
+                <div class="stat-change positive">+{{ today_stats.new_users }} today</div>
+                {% endif %}
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Active Today</div>
+                <div class="stat-value">{{ today_stats.active_users if today_stats else 0 }}</div>
+                {% if today_stats and today_stats.returning_users %}
+                <div class="stat-change">{{ today_stats.returning_users }} returning</div>
+                {% endif %}
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Active Subscriptions</div>
+                <div class="stat-value">{{ active_subscriptions }}</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Messages Today</div>
+                <div class="stat-value">{{ today_stats.total_messages if today_stats else 0 }}</div>
+                {% if today_stats and today_stats.avg_messages_per_user > 0 %}
+                <div class="stat-change">{{ "%.1f"|format(today_stats.avg_messages_per_user) }} per user</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-container">
+            <h2 class="chart-title">Daily Active Users (Last 30 Days)</h2>
+            <canvas id="activeUsersChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h2 class="chart-title">New Users (Last 30 Days)</h2>
+            <canvas id="newUsersChart"></canvas>
+        </div>
+
+        <!-- Feature Usage -->
+        <h2 class="section-title">Feature Usage (Last 7 Days)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Total Uses</th>
+                    <th>Unique Users</th>
+                    <th>Avg Uses per User</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feature in feature_stats %}
+                <tr>
+                    <td><span class="badge badge-primary">{{ feature.feature_name }}</span></td>
+                    <td>{{ feature.total_usage }}</td>
+                    <td>{{ feature.total_users }}</td>
+                    <td>{{ "%.1f"|format(feature.total_usage / feature.total_users if feature.total_users > 0 else 0) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Recent Events -->
+        <h2 class="section-title">Recent Activity</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>User ID</th>
+                    <th>Event</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in recent_events %}
+                <tr>
+                    <td>{{ event.timestamp.strftime("%Y-%m-%d %H:%M") }}</td>
+                    <td>{{ event.user_id }}</td>
+                    <td><span class="badge badge-success">{{ event.event_type }}</span></td>
+                    <td>{{ event.event_data if event.event_data else '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Fetch data for charts
+        fetch('/admin/api/stats')
+            .then(response => response.json())
+            .then(data => {
+                // Active Users Chart
+                new Chart(document.getElementById('activeUsersChart'), {
+                    type: 'line',
+                    data: {
+                        labels: data.dates,
+                        datasets: [{
+                            label: 'Active Users',
+                            data: data.active_users,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // New Users Chart
+                new Chart(document.getElementById('newUsersChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.dates,
+                        datasets: [{
+                            label: 'New Users',
+                            data: data.new_users,
+                            backgroundColor: '#27ae60',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+    </script>
+</body>
+</html>

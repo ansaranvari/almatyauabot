@@ -16,6 +16,7 @@ from app.services.subscription_checker import subscription_checker
 from app.services.webhook_monitor import webhook_monitor
 from app.bot.handlers import router
 from app.bot.middlewares.i18n import I18nMiddleware
+from app.admin.dashboard import router as admin_router
 
 # Configure logging
 logging.basicConfig(
@@ -178,6 +179,9 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan
 )
+
+# Include admin routes
+app.include_router(admin_router)
 
 
 @app.get("/")
