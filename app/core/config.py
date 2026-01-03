@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     DEFAULT_LANGUAGE: str = "ru"
     SUPPORTED_LANGUAGES: list[str] = ["en", "ru", "kk"]
 
+    # Admin Panel Authentication
+    ADMIN_USERNAME: str = "admin"
+    ADMIN_PASSWORD: str = "changeme"
+
     class Config:
         env_file = ".env"
         case_sensitive = True

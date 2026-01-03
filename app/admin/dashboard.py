@@ -2,7 +2,7 @@
 Admin dashboard for viewing bot analytics
 """
 from datetime import datetime, timedelta
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select, func, desc
@@ -17,14 +17,18 @@ from app.db.analytics_models import (
     UserRetention
 )
 from app.db.models import User, Subscription
+from app.admin.auth import verify_admin_credentials
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/admin/templates")
 
 
 @router.get("/admin", response_class=HTMLResponse)
-async def admin_dashboard(request: Request):
-    """Main admin dashboard page"""
+async def admin_dashboard(
+    request: Request,
+    username: str = Depends(verify_admin_credentials)
+):
+    """Main admin dashboard page (requires authentication)"""
 
     try:
         async with AsyncSessionLocal() as db:
@@ -106,8 +110,8 @@ async def admin_dashboard(request: Request):
 
 
 @router.get("/admin/api/stats", response_model=Dict[str, Any])
-async def get_stats_api():
-    """API endpoint for getting stats (for charts)"""
+async def get_stats_api(username: str = Depends(verify_admin_credentials)):
+    """API endpoint for getting stats (for charts, requires authentication)"""
 
     async with AsyncSessionLocal() as db:
         thirty_days_ago = datetime.utcnow() - timedelta(days=30)
