@@ -11,11 +11,11 @@ def get_language_keyboard() -> InlineKeyboardMarkup:
     """
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="🇬🇧 English", callback_data="lang:en"),
+            InlineKeyboardButton(text="🇰🇿 Қазақша", callback_data="lang:kk"),
         ],
         [
             InlineKeyboardButton(text="🇷🇺 Русский", callback_data="lang:ru"),
-            InlineKeyboardButton(text="🇰🇿 Қазақша", callback_data="lang:kk"),
+            InlineKeyboardButton(text="🇬🇧 English", callback_data="lang:en"),
         ]
     ])
     return keyboard
