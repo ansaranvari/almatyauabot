@@ -28,8 +28,8 @@ class Settings(BaseSettings):
     SYNC_INTERVAL_MINUTES: int = 5
 
     # Localization
-    DEFAULT_LANGUAGE: str = "ru"
-    SUPPORTED_LANGUAGES: list[str] = ["ru", "kk"]
+    DEFAULT_LANGUAGE: str = "en"
+    SUPPORTED_LANGUAGES: list[str] = ["en", "ru", "kk"]
 
     class Config:
         env_file = ".env"

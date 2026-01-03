@@ -539,6 +539,276 @@ LOCALES = {
             "📊 Жақын станциядан деректер (сағат сайын жаңарту)\n"
             "💻 Desktop: Компьютерден сапаны тексергіңіз келсе, 📎 → Геопозиция түймесін басыңыз"
         ),
+    },
+
+    "en": {
+        # Welcome & Language Selection
+        "choose_language": "👋 Welcome! Choose your language:",
+        "welcome": (
+            "👋 <b>Welcome to Almaty Aua Bot!</b>\n\n"
+            "🌍 Air quality monitoring bot for Almaty\n\n"
+            "<b>What I can do:</b>\n"
+            "🔍 Check air quality at any point in the city\n"
+            "📊 Show 24-hour charts\n"
+            "🔔 Notify when air becomes clean\n"
+            "⭐ Save favorite places for quick checks\n\n"
+            "📍 <i>Data from 170+ sensors in Almaty and suburbs</i>"
+        ),
+        "language_selected": "✅ Language changed to English",
+
+        # Main Menu
+        "main_menu": "📋 Main Menu",
+        "check_air_button": "🔍 Check Air Quality",
+        "subscribe_button": "🔔 Subscribe to Clean Air",
+        "my_subscriptions_button": "📋 My Subscriptions",
+        "my_favorites_button": "⭐ Favorite Places",
+        "change_language_button": "🗣️ Change Language",
+        "help_button": "ℹ️ Help",
+
+        # Location Request
+        "send_location": "📍 Send your location — I'll find the nearest sensor and show you what you're breathing",
+        "location_button": "📍 Send Location",
+
+        # Air Quality Response
+        "status_line": "📊 Status: {emoji} <b>{status}</b>",
+        "aqi_line": "💨 Air Quality Index (AQI): <b>{aqi}</b>",
+        "station_name": "📍 Nearest sensor: <b>{name}</b>",
+        "distance_line_km": "📏 Distance: {distance} km",
+        "distance_line_m": "📏 Distance: {distance} m",
+        "update_line": "🕐 Updated: {time}",
+        "advice_header_new": "💡 <b>Recommendation:</b>",
+
+        # PM Levels
+        "pm25_label": "• PM2.5: {value} µg/m³",
+        "pm10_label": "• PM10: {value} µg/m³",
+        "pm1_label": "• PM1.0: {value} µg/m³",
+
+        # Temperature & Humidity
+        "temp_label": "🌡 Temperature: {value}°C",
+        "humidity_label": "💧 Humidity: {value}%",
+
+        # Health Advice
+        "advice_header": "\n💡 <b>Recommendation:</b>\n",
+
+        # Air Quality Statuses
+        "status_good": "Clean Air",
+        "status_moderate": "Moderate",
+        "status_unhealthy_sensitive": "Unhealthy for Sensitive Groups",
+        "status_unhealthy": "Unhealthy",
+        "status_very_unhealthy": "Very Unhealthy",
+        "status_hazardous": "Hazardous",
+
+        # Health Advice by Status
+        "advice_good": "✅ Air is safe for everyone.\n🔹 You can walk and exercise outdoors.\n🔹 Ventilate your rooms.",
+        "advice_moderate": "✅ Safe for most people, but sensitive groups should be cautious.\n🔹 Children, elderly, people with lung/heart conditions may reduce prolonged outdoor activities.\n🔹 If you feel discomfort (cough, eye irritation) — take breaks.",
+        "advice_unhealthy_sensitive": "⚠️ Sensitive groups (asthma, COPD, children, elderly, pregnant) are at particular risk.\n🔹 Limit outdoor physical activity.\n🔹 Consider wearing a mask (e.g., N95) if you need to go outside.",
+        "advice_unhealthy": "⚠️ Harmful not just for sensitive groups — many will start experiencing negative effects.\n🔹 Avoid intense outdoor activities.\n🔹 Indoors — keep windows closed, use air purifiers.",
+        "advice_very_unhealthy": "‼️ Serious risk for everyone.\n🔹 Minimize outdoor exposure.\n🔹 Protective masks, air purifiers, avoid walks.",
+        "advice_hazardous": "⛔ Hazardous level for everyone — high health risk.\n🔹 Stay indoors or in protected spaces.\n🔹 Avoid any outdoor physical activity.",
+
+        # Errors
+        "no_stations_found": "❌ Unfortunately, no monitoring stations found nearby.",
+        "error_occurred": "❌ An error occurred. Please try again later.",
+        "invalid_location": "❌ Please send a valid location.",
+
+        # Subscriptions
+        "subscribe_prompt": "📍 Send the location you want to monitor. We'll notify you when the air becomes clean so you can go for a walk or ventilate your home.",
+
+        # Subscription duration
+        "duration_prompt": "⏰ <b>Choose notification period:</b>",
+        "duration_today": "Today only",
+        "duration_24h": "Next 24 hours",
+        "duration_3d": "3 days",
+        "duration_7d": "7 days",
+        "duration_forever": "♾️ Forever",
+
+        # Quiet hours
+        "quiet_hours_prompt": "🌙 <b>Quiet hours</b>\n\nDo not disturb between 11 PM and 7 AM?",
+        "quiet_hours_yes": "✅ Yes, do not disturb",
+        "quiet_hours_change": "⚙️ Change time",
+        "quiet_hours_custom": "Enter hours in format: <code>HH-HH</code>\nExample: <code>22-08</code>",
+        "quiet_hours_invalid": "❌ Invalid format. Use HH-HH format (e.g., 22-08)",
+
+        # Subscription saved
+        "subscription_saved": "✅ <b>Subscription activated!</b>\n\n📍 Station: {station_name}\n⏰ Duration: {duration}\n🌙 Quiet hours: {quiet_hours}\n\nYou'll receive a notification when air becomes clean (AQI ≤ 50).",
+        "subscription_exists": "ℹ️ You already have a subscription for this location.",
+        "no_subscriptions": "You don't have any active subscriptions yet.\n\nPress «🔔 Subscribe to Clean Air» to create a subscription.",
+        "subscription_deleted": "✅ Subscription deleted.",
+        "subscription_expired": "⏰ Your monitoring subscription has expired.\n\n📍 {location}\n\nYou can create a new subscription anytime.",
+
+        # Notifications
+        "clean_air_notification": "✨ <b>Air is clean now!</b>\n\nAQI: <b>{aqi}</b>\n📍 {location}\n\n💡 Great time to ventilate or go for a walk.",
+        "bad_air_notification": "⚠️ <b>Attention! Air quality has worsened!</b>\n\nAQI: <b>{aqi}</b>\n📍 {location}\n\n💡 We recommend closing windows and limiting outdoor activities.",
+        "alert_if_bad_button": "📉 Alert if air worsens (3h)",
+        "safety_net_activated": "✅ Monitoring activated for 3 hours.\n\nYou'll receive a notification if air becomes unhealthy (AQI > 75).",
+
+        # Help hints
+        "hint_after_check": "💡 <i>Tip: Press «🔔 Subscribe to this location» to receive notifications when air becomes clean!</i>",
+        "hint_after_subscription": "💡 <i>Tip: In «My Subscriptions» menu you can change duration and quiet hours.</i>",
+        "hint_subscribe_button": "💡 <i>Tip: The «🔔 Subscribe to this location» button allows you to quickly create a subscription for the checked location.</i>",
+
+        # Favorites
+        "no_favorites": "You don't have any favorite places yet.\n\nCheck air quality anywhere, then press «⭐ Add to Favorites» to save that location.",
+        "favorite_added": "✅ Location added to favorites!",
+        "favorite_deleted": "✅ Location removed from favorites.",
+        "favorite_already_exists": "ℹ️ This location is already in favorites.",
+        "enter_favorite_name": "Enter a name for this location:\n\nFor example: Home, Work, School",
+        "favorite_name_too_long": "❌ Name is too long. Maximum 100 characters.",
+        "add_to_favorites_button": "⭐ Add to Favorites",
+
+        # Onboarding messages
+        "onboarding_check_air": (
+            "🔍 <b>Air Quality Check</b>\n\n"
+            "Find out what you're breathing right now!\n\n"
+            "<b>What you'll get:</b>\n"
+            "📊 Air Quality Index (AQI)\n"
+            "💨 Pollutant levels (PM2.5, PM10, PM1.0)\n"
+            "💡 Health recommendations\n"
+            "📍 Data from nearest sensor"
+        ),
+        "onboarding_subscribe": (
+            "🔔 <b>Notification Subscription</b>\n\n"
+            "We'll let you know when the air is clean again so you can go for a walk or ventilate your home!\n\n"
+            "<b>What you'll get:</b>\n"
+            "📡 24/7 air quality monitoring\n"
+            "🔔 Notification at status: 🟢 Clean Air\n"
+            "🔔 Warning if air becomes polluted again\n"
+            "🌙 No night disturbances (quiet hours)\n"
+            "🛡️ No spam (notifications max once every 4 hours)\n\n"
+            "<b>Easy setup:</b>\n"
+            "1️⃣ Choose subscription duration:\n"
+            "   From 1 day to forever\n\n"
+            "2️⃣ Set quiet hours:\n"
+            "   Default 11 PM-7 AM, but you can change it"
+        ),
+        "onboarding_button": "✅ Get Started",
+
+        # Duration display
+        "duration_today_text": "Today only",
+        "duration_24h_text": "Next 24 hours",
+        "duration_3d_text": "3 days",
+        "duration_7d_text": "7 days",
+        "duration_forever_text": "Forever",
+
+        "edit_subscription": "⚙️ Settings",
+        "delete_subscription": "🗑 Delete",
+        "back_to_menu": "◀️ Back to Menu",
+
+        # Edit menu
+        "edit_menu_prompt": "⚙️ <b>What would you like to change?</b>",
+        "edit_duration_button": "⏰ Subscription Duration",
+        "edit_quiet_hours_button": "🌙 Quiet Hours",
+        "subscription_updated": "✅ Settings updated!\n\n⏰ Duration: {duration}\n🌙 Quiet hours: {quiet_hours}",
+        "duration_updated": "✅ Duration updated: {duration}",
+        "quiet_hours_updated": "✅ Quiet hours updated: {quiet_hours}",
+
+        # Info Buttons
+        "info_pm25_button": "ℹ️ What is PM2.5?",
+        "info_pm10_button": "ℹ️ What is PM10?",
+        "info_pm1_button": "ℹ️ What is PM1.0?",
+        "info_aqi_button": "ℹ️ What is AQI?",
+
+        # PM2.5 Info
+        "pm25_info_title": "🔬 <b>Fine Particles PM2.5</b>",
+        "pm25_info_description": "Smoke, soot and exhaust particles. Stay in the air for long periods and harm the respiratory system.\n",
+        "pm25_info_ranges": (
+            "📊 <b>Ranges and effects:</b>\n\n"
+            "🟢 <b>0-12 µg/m³</b> — Clean air\n"
+            "Safe to breathe\n\n"
+            "🟡 <b>12.1-35 µg/m³</b> — Light pollution\n"
+            "Possible mild symptoms (cough, irritation)\n\n"
+            "🟠 <b>35.1-55 µg/m³</b> — Unhealthy for sensitive groups\n"
+            "Risk for children, elderly, asthmatics\n\n"
+            "🔴 <b>55.1-150 µg/m³</b> — Unhealthy\n"
+            "Harmful to all groups, risk of respiratory diseases\n\n"
+            "🟤 <b>>150 µg/m³</b> — Hazardous\n"
+            "Extremely dangerous, risk of serious diseases"
+        ),
+
+        # PM10 Info
+        "pm10_info_title": "🔬 <b>Coarse Particles PM10</b>",
+        "pm10_info_description": "Dust, pollen and sand smaller than 10 µm. Deposit in upper respiratory tract.\n",
+        "pm10_info_ranges": (
+            "📊 <b>Ranges and effects:</b>\n\n"
+            "🟢 <b>0-20 µg/m³</b> — Clean air\n"
+            "Safe, low allergy risk\n\n"
+            "🟡 <b>20.1-50 µg/m³</b> — Light pollution\n"
+            "Possible allergic reactions, mild irritation\n\n"
+            "🟠 <b>50.1-100 µg/m³</b> — Unhealthy for sensitive groups\n"
+            "Allergic reactions, respiratory irritation\n\n"
+            "🔴 <b>100.1-250 µg/m³</b> — Unhealthy\n"
+            "High allergy risk, breathing difficulties\n\n"
+            "🟤 <b>>250 µg/m³</b> — Hazardous\n"
+            "Extremely dangerous, risk of serious diseases"
+        ),
+
+        # PM1.0 Info
+        "pm1_info_title": "🔬 <b>Ultra-fine Particles PM1.0</b>",
+        "pm1_info_description": "Smoke, soot and exhaust particles smaller than 1 µm. Stay in the air for long periods and harm the respiratory system.\n",
+        "pm1_info_ranges": (
+            "📊 <b>Ranges and effects:</b>\n\n"
+            "🟢 <b>0-10 µg/m³</b> — Clean air\n"
+            "Safe to breathe\n\n"
+            "🟡 <b>10.1-20 µg/m³</b> — Light pollution\n"
+            "Discomfort for sensitive people\n\n"
+            "🔴 <b>>20 µg/m³</b> — Unhealthy\n"
+            "High risk of particles entering bloodstream"
+        ),
+
+        # AQI Info with detailed recommendations
+        "aqi_info_title": "📊 <b>Air Quality Index (AQI)</b>",
+        "aqi_info_description": "Comprehensive air quality indicator based on PM2.5 concentration.\n",
+        "aqi_info_ranges": (
+            "📊 <b>Statuses and recommendations:</b>\n\n"
+            "🟢 <b>0-50 — Clean Air</b>\n\n"
+            "✅ Air is safe for everyone.\n"
+            "🔹 You can walk and exercise outdoors.\n"
+            "🔹 Ventilate your rooms.\n\n"
+            "🟡 <b>51-100 — Moderately Polluted</b>\n\n"
+            "✅ Safe for most people, but sensitive groups should be cautious.\n"
+            "🔹 Children, elderly, people with lung/heart conditions may reduce prolonged outdoor activities.\n"
+            "🔹 If you feel discomfort (cough, eye irritation) — take breaks.\n\n"
+            "🟠 <b>101-150 — Unhealthy for Sensitive Groups</b>\n\n"
+            "⚠️ Sensitive groups (asthma, COPD, children, elderly, pregnant) are at particular risk.\n"
+            "🔹 Limit outdoor physical activity.\n"
+            "🔹 Consider wearing a mask (e.g., N95) if you need to go outside.\n\n"
+            "🔴 <b>151-200 — Unhealthy for Everyone</b>\n\n"
+            "⚠️ Harmful not just for sensitive groups — many will start experiencing negative effects.\n"
+            "🔹 Avoid intense outdoor activities.\n"
+            "🔹 Indoors — keep windows closed, use air purifiers.\n\n"
+            "🟣 <b>201-300 — Very Unhealthy for Everyone</b>\n\n"
+            "‼️ Serious risk for everyone.\n"
+            "🔹 Minimize outdoor exposure.\n"
+            "🔹 Protective masks, air purifiers, avoid walks.\n\n"
+            "🟤 <b>301+ — Hazardous</b>\n\n"
+            "⛔ Hazardous level for everyone — high health risk.\n"
+            "🔹 Stay indoors or in protected spaces.\n"
+            "🔹 Avoid any outdoor physical activity."
+        ),
+
+        # Help
+        "help_text": (
+            "ℹ️ <b>How to use the bot:</b>\n\n"
+            "<b>🔍 Air Quality Check:</b>\n"
+            "1️⃣ Press «Check Air Quality»\n"
+            "2️⃣ Send your location\n"
+            "3️⃣ Get data: AQI, PM2.5, PM10, PM1.0\n"
+            "4️⃣ Press ℹ️ buttons for detailed pollutant information\n\n"
+            "<b>🔔 Notification Subscription:</b>\n"
+            "• Receive notifications when air becomes clean (AQI ≤ 50)\n"
+            "• Choose duration: today, 24h, 3 days, 7 days or forever\n"
+            "• Set quiet hours (default 11 PM-7 AM)\n"
+            "• Anti-spam: max once every 4 hours\n\n"
+            "<b>⚙️ Subscription Management:</b>\n"
+            "• View: «My Subscriptions»\n"
+            "• «Settings» button: change duration or quiet hours\n"
+            "• «Delete» button: cancel subscription\n\n"
+            "<b>📉 Reverse Monitoring:</b>\n"
+            "• When you receive a clean air notification, press «Alert if air worsens (3h)»\n"
+            "• You'll receive a notification if AQI rises above 75 within the next 3 hours\n\n"
+            "📊 Data from nearest station (updated hourly)\n"
+            "💻 Desktop: To check quality from computer, press 📎 → Location"
+        ),
     }
 }
 

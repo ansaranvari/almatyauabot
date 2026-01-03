@@ -11,8 +11,11 @@ def get_language_keyboard() -> InlineKeyboardMarkup:
     """
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="Қазақша", callback_data="lang:kk"),
-            InlineKeyboardButton(text="Русский", callback_data="lang:ru"),
+            InlineKeyboardButton(text="🇬🇧 English", callback_data="lang:en"),
+        ],
+        [
+            InlineKeyboardButton(text="🇷🇺 Русский", callback_data="lang:ru"),
+            InlineKeyboardButton(text="🇰🇿 Қазақша", callback_data="lang:kk"),
         ]
     ])
     return keyboard
@@ -23,7 +26,7 @@ def get_main_menu_keyboard(lang: str) -> ReplyKeyboardMarkup:
     Get main menu keyboard with localized buttons
 
     Args:
-        lang: Language code (ru/kk)
+        lang: Language code (ru/kk/en)
 
     Returns:
         ReplyKeyboardMarkup with main menu options
@@ -50,7 +53,7 @@ def get_location_keyboard(lang: str, favorites: list = None) -> ReplyKeyboardMar
     Get keyboard with location sharing button and back button
 
     Args:
-        lang: Language code (ru/kk)
+        lang: Language code (ru/kk/en)
         favorites: List of favorite locations to show as buttons
 
     Returns:
