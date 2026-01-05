@@ -159,7 +159,7 @@
     <div class="container">
         <header>
             <h1>📊 Almaty Aua Bot Analytics</h1>
-            <p class="subtitle">Real-time metrics and insights (Almaty Time: UTC+6)</p>
+            <p class="subtitle">Real-time metrics and insights (Almaty Time: UTC+5)</p>
         </header>
 
         <!-- Key Metrics -->
@@ -175,9 +175,7 @@
             <div class="stat-card">
                 <div class="stat-label">Active Today</div>
                 <div class="stat-value">{{ today_stats.active_users if today_stats else 0 }}</div>
-                {% if today_stats and today_stats.returning_users %}
-                <div class="stat-change">{{ today_stats.returning_users }} returning</div>
-                {% endif %}
+                <div class="stat-change">Unique users</div>
             </div>
 
             <div class="stat-card">
@@ -186,10 +184,10 @@
             </div>
 
             <div class="stat-card">
-                <div class="stat-label">Messages Today</div>
-                <div class="stat-value">{{ today_stats.total_messages if today_stats else 0 }}</div>
-                {% if today_stats and today_stats.avg_messages_per_user > 0 %}
-                <div class="stat-change">{{ "%.1f"|format(today_stats.avg_messages_per_user) }} per user</div>
+                <div class="stat-label">Air Quality Checked</div>
+                <div class="stat-value">{{ today_stats.air_checks if today_stats else 0 }}</div>
+                {% if today_stats and today_stats.unique_air_checkers > 0 %}
+                <div class="stat-change">{{ today_stats.unique_air_checkers }} users</div>
                 {% endif %}
             </div>
         </div>

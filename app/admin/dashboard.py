@@ -58,7 +58,7 @@ async def admin_dashboard(
             )
             today_stats = today_stats_result.scalars().first()
 
-            # Get real-time active users count for today (from user_events)
+            # Get real-time active users count for today (unique users from user_events)
             active_today_result = await db.execute(
                 select(func.count(func.distinct(UserEvent.user_id)))
                 .where(UserEvent.timestamp >= today_almaty.astimezone(ZoneInfo("UTC")))
@@ -72,27 +72,41 @@ async def admin_dashboard(
             )
             new_users_today = new_users_today_result.scalar() or 0
 
-            # Get total messages today
-            messages_today_result = await db.execute(
+            # Get air quality checks today (count of check_air events)
+            air_checks_today_result = await db.execute(
                 select(func.count(UserEvent.id))
-                .where(UserEvent.timestamp >= today_almaty.astimezone(ZoneInfo("UTC")))
+                .where(
+                    UserEvent.timestamp >= today_almaty.astimezone(ZoneInfo("UTC")),
+                    UserEvent.event_type == 'check_air'
+                )
             )
-            messages_today = messages_today_result.scalar() or 0
+            air_checks_today = air_checks_today_result.scalar() or 0
+
+            # Get unique users who checked air quality today
+            unique_air_checkers_result = await db.execute(
+                select(func.count(func.distinct(UserEvent.user_id)))
+                .where(
+                    UserEvent.timestamp >= today_almaty.astimezone(ZoneInfo("UTC")),
+                    UserEvent.event_type == 'check_air'
+                )
+            )
+            unique_air_checkers = unique_air_checkers_result.scalar() or 0
 
             # Create a synthetic today_stats object if it doesn't exist
             if not today_stats:
                 class TodayStats:
                     active_users = active_today
                     new_users = new_users_today
-                    total_messages = messages_today
+                    air_checks = air_checks_today
+                    unique_air_checkers = unique_air_checkers
                     returning_users = 0
-                    avg_messages_per_user = messages_today / active_today if active_today > 0 else 0
                 today_stats = TodayStats()
             else:
                 # Override with real-time data
                 today_stats.active_users = active_today
                 today_stats.new_users = new_users_today
-                today_stats.total_messages = messages_today
+                today_stats.air_checks = air_checks_today
+                today_stats.unique_air_checkers = unique_air_checkers
 
             # Get total users count
             total_users_result = await db.execute(select(func.count(User.id)))
@@ -126,15 +140,33 @@ async def admin_dashboard(
             )
             recent_events_raw = recent_events_result.scalars().all()
 
-            # Convert timestamps to Almaty timezone
+            # Convert timestamps to Almaty timezone and format event data
+            from app.db.models import AirQualityStation
             recent_events = []
             for event in recent_events_raw:
+                # Format event data - replace coordinates with station name for check_air events
+                event_display = event.event_data
+                if event.event_type == 'check_air' and event.event_data:
+                    try:
+                        station_id = event.event_data.get('station_id')
+                        if station_id:
+                            # Get station name
+                            station_result = await db.execute(
+                                select(AirQualityStation.name)
+                                .where(AirQualityStation.station_id == station_id)
+                            )
+                            station_name = station_result.scalar()
+                            if station_name:
+                                event_display = {'station': station_name}
+                    except:
+                        pass
+
                 # Create a copy with converted timestamp
                 event_dict = {
                     'id': event.id,
                     'user_id': event.user_id,
                     'event_type': event.event_type,
-                    'event_data': event.event_data,
+                    'event_data': event_display,
                     'timestamp': event.timestamp.replace(tzinfo=ZoneInfo("UTC")).astimezone(ALMATY_TZ)
                 }
                 recent_events.append(type('Event', (), event_dict)())
