@@ -2,6 +2,7 @@
 Admin dashboard for viewing bot analytics
 """
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -21,6 +22,9 @@ from app.admin.auth import verify_admin_credentials
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/admin/templates")
+
+# Almaty timezone
+ALMATY_TZ = ZoneInfo("Asia/Almaty")
 
 
 @router.get("/admin", response_class=HTMLResponse)
@@ -42,12 +46,53 @@ async def admin_dashboard(
             )
             daily_stats = daily_stats_result.scalars().all()
 
-            # Get today's stats
-            today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+            # Get today's stats - use Almaty timezone
+            now_almaty = datetime.now(ALMATY_TZ)
+            today_almaty = now_almaty.replace(hour=0, minute=0, second=0, microsecond=0)
+
+            # Calculate real-time stats for today from user_events
             today_stats_result = await db.execute(
-                select(DailyUserStats).where(DailyUserStats.date == today)
+                select(DailyUserStats).where(
+                    DailyUserStats.date >= today_almaty.astimezone(ZoneInfo("UTC"))
+                )
             )
             today_stats = today_stats_result.scalars().first()
+
+            # Get real-time active users count for today (from user_events)
+            active_today_result = await db.execute(
+                select(func.count(func.distinct(UserEvent.user_id)))
+                .where(UserEvent.timestamp >= today_almaty.astimezone(ZoneInfo("UTC")))
+            )
+            active_today = active_today_result.scalar() or 0
+
+            # Get new users today
+            new_users_today_result = await db.execute(
+                select(func.count(User.id))
+                .where(User.created_at >= today_almaty.astimezone(ZoneInfo("UTC")))
+            )
+            new_users_today = new_users_today_result.scalar() or 0
+
+            # Get total messages today
+            messages_today_result = await db.execute(
+                select(func.count(UserEvent.id))
+                .where(UserEvent.timestamp >= today_almaty.astimezone(ZoneInfo("UTC")))
+            )
+            messages_today = messages_today_result.scalar() or 0
+
+            # Create a synthetic today_stats object if it doesn't exist
+            if not today_stats:
+                class TodayStats:
+                    active_users = active_today
+                    new_users = new_users_today
+                    total_messages = messages_today
+                    returning_users = 0
+                    avg_messages_per_user = messages_today / active_today if active_today > 0 else 0
+                today_stats = TodayStats()
+            else:
+                # Override with real-time data
+                today_stats.active_users = active_today
+                today_stats.new_users = new_users_today
+                today_stats.total_messages = messages_today
 
             # Get total users count
             total_users_result = await db.execute(select(func.count(User.id)))
@@ -73,13 +118,26 @@ async def admin_dashboard(
             )
             feature_stats = feature_stats_result.all()
 
-            # Get recent events (last 100)
+            # Get recent events (last 100) and convert timestamps to Almaty time
             recent_events_result = await db.execute(
                 select(UserEvent)
                 .order_by(desc(UserEvent.timestamp))
                 .limit(100)
             )
-            recent_events = recent_events_result.scalars().all()
+            recent_events_raw = recent_events_result.scalars().all()
+
+            # Convert timestamps to Almaty timezone
+            recent_events = []
+            for event in recent_events_raw:
+                # Create a copy with converted timestamp
+                event_dict = {
+                    'id': event.id,
+                    'user_id': event.user_id,
+                    'event_type': event.event_type,
+                    'event_data': event.event_data,
+                    'timestamp': event.timestamp.replace(tzinfo=ZoneInfo("UTC")).astimezone(ALMATY_TZ)
+                }
+                recent_events.append(type('Event', (), event_dict)())
 
             # Get subscription stats for last 30 days
             sub_stats_result = await db.execute(
