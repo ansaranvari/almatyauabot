@@ -98,12 +98,13 @@ async def admin_dashboard(
             # Create a synthetic today_stats object if it doesn't exist
             if not today_stats:
                 class TodayStats:
-                    active_users = active_today
-                    new_users = new_users_today
-                    air_checks = air_checks_today
-                    unique_air_checkers = unique_air_checkers
-                    returning_users = 0
+                    pass
                 today_stats = TodayStats()
+                today_stats.active_users = active_today
+                today_stats.new_users = new_users_today
+                today_stats.air_checks = air_checks_today
+                today_stats.unique_air_checkers = unique_air_checkers
+                today_stats.returning_users = 0
             else:
                 # Override with real-time data
                 today_stats.active_users = active_today

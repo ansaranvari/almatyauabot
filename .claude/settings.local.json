@@ -6,7 +6,11 @@
       "Bash(docker compose:*)",
       "WebFetch(domain:api.air.org.kz)",
       "Bash(docker ps:*)",
-      "Bash(docker exec:*)"
+      "Bash(docker exec:*)",
+      "Bash(curl:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)"
     ]
   }
 }
