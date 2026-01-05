@@ -50,10 +50,13 @@ async def admin_dashboard(
             now_almaty = datetime.now(ALMATY_TZ)
             today_almaty = now_almaty.replace(hour=0, minute=0, second=0, microsecond=0)
 
+            # Convert to UTC and make it naive for database queries (DB stores timestamps without timezone)
+            today_utc_naive = today_almaty.astimezone(ZoneInfo("UTC")).replace(tzinfo=None)
+
             # Calculate real-time stats for today from user_events
             today_stats_result = await db.execute(
                 select(DailyUserStats).where(
-                    DailyUserStats.date >= today_almaty.astimezone(ZoneInfo("UTC"))
+                    DailyUserStats.date >= today_utc_naive
                 )
             )
             today_stats = today_stats_result.scalars().first()
@@ -61,14 +64,14 @@ async def admin_dashboard(
             # Get real-time active users count for today (unique users from user_events)
             active_today_result = await db.execute(
                 select(func.count(func.distinct(UserEvent.user_id)))
-                .where(UserEvent.timestamp >= today_almaty.astimezone(ZoneInfo("UTC")))
+                .where(UserEvent.timestamp >= today_utc_naive)
             )
             active_today = active_today_result.scalar() or 0
 
             # Get new users today
             new_users_today_result = await db.execute(
                 select(func.count(User.id))
-                .where(User.created_at >= today_almaty.astimezone(ZoneInfo("UTC")))
+                .where(User.created_at >= today_utc_naive)
             )
             new_users_today = new_users_today_result.scalar() or 0
 
@@ -76,7 +79,7 @@ async def admin_dashboard(
             air_checks_today_result = await db.execute(
                 select(func.count(UserEvent.id))
                 .where(
-                    UserEvent.timestamp >= today_almaty.astimezone(ZoneInfo("UTC")),
+                    UserEvent.timestamp >= today_utc_naive,
                     UserEvent.event_type == 'check_air'
                 )
             )
@@ -86,7 +89,7 @@ async def admin_dashboard(
             unique_air_checkers_result = await db.execute(
                 select(func.count(func.distinct(UserEvent.user_id)))
                 .where(
-                    UserEvent.timestamp >= today_almaty.astimezone(ZoneInfo("UTC")),
+                    UserEvent.timestamp >= today_utc_naive,
                     UserEvent.event_type == 'check_air'
                 )
             )
