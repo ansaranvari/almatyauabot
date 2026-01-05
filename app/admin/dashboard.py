@@ -75,12 +75,12 @@ async def admin_dashboard(
             )
             new_users_today = new_users_today_result.scalar() or 0
 
-            # Get air quality checks today (count of check_air events)
+            # Get air quality checks today (count of check_air_clicked events)
             air_checks_today_result = await db.execute(
                 select(func.count(UserEvent.id))
                 .where(
                     UserEvent.timestamp >= today_utc_naive,
-                    UserEvent.event_type == 'check_air'
+                    UserEvent.event_type == 'check_air_clicked'
                 )
             )
             air_checks_today = air_checks_today_result.scalar() or 0
@@ -90,7 +90,7 @@ async def admin_dashboard(
                 select(func.count(func.distinct(UserEvent.user_id)))
                 .where(
                     UserEvent.timestamp >= today_utc_naive,
-                    UserEvent.event_type == 'check_air'
+                    UserEvent.event_type == 'check_air_clicked'
                 )
             )
             unique_air_checkers = unique_air_checkers_result.scalar() or 0
@@ -223,6 +223,33 @@ async def get_stats_api(username: str = Depends(verify_admin_credentials)):
         active_users = [stat.active_users for stat in daily_stats]
         new_users = [stat.new_users for stat in daily_stats]
         total_messages = [stat.total_messages for stat in daily_stats]
+
+        # Add today's real-time data if it's not already in the daily_stats
+        now_almaty = datetime.now(ALMATY_TZ)
+        today_almaty = now_almaty.replace(hour=0, minute=0, second=0, microsecond=0)
+        today_utc_naive = today_almaty.astimezone(ZoneInfo("UTC")).replace(tzinfo=None)
+        today_str = today_utc_naive.strftime("%Y-%m-%d")
+
+        # Check if today is already in the data
+        if not dates or dates[-1] != today_str:
+            # Calculate today's stats in real-time
+            active_today_result = await db.execute(
+                select(func.count(func.distinct(UserEvent.user_id)))
+                .where(UserEvent.timestamp >= today_utc_naive)
+            )
+            active_today = active_today_result.scalar() or 0
+
+            new_users_today_result = await db.execute(
+                select(func.count(User.id))
+                .where(User.created_at >= today_utc_naive)
+            )
+            new_users_today = new_users_today_result.scalar() or 0
+
+            # Add today's data to the lists
+            dates.append(today_str)
+            active_users.append(active_today)
+            new_users.append(new_users_today)
+            total_messages.append(0)  # We don't track messages, so 0
 
         return {
             "dates": dates,
