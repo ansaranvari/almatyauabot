@@ -136,13 +136,13 @@ async def handle_quick_subscribe(callback: CallbackQuery, state: FSMContext, lan
     except Exception as e:
         logger.error(f"Error in quick subscribe: {e}", exc_info=True)
         await callback.answer(
-            "❌ Произошла ошибка" if lang == "ru" else "❌ Қате орын алды",
+            get_text(lang, "error_general"),
             show_alert=True
         )
 
 
 @router.message(F.text.in_([
-    "🔔 Подписаться на чистый воздух", "🔔 Таза ауаға жазылу"
+    "🔔 Подписаться на чистый воздух", "🔔 Таза ауаға жазылу", "🔔 Subscribe to Clean Air"
 ]))
 async def cmd_subscribe(message: Message, state: FSMContext, lang: str, user_id: int, **kwargs):
     """
@@ -542,7 +542,7 @@ async def create_subscription(message: Message, state: FSMContext, lang: str, us
 
 
 @router.message(F.text.in_([
-    "📋 Мои подписки", "📋 Менің жазылымдарым"
+    "📋 Мои подписки", "📋 Менің жазылымдарым", "📋 My Subscriptions"
 ]))
 async def cmd_my_subscriptions(message: Message, lang: str, user_id: int, **kwargs):
     """
@@ -565,7 +565,7 @@ async def cmd_my_subscriptions(message: Message, lang: str, user_id: int, **kwar
             return
 
         # Format subscriptions list
-        text = "📋 <b>" + ("Ваши подписки:" if lang == "ru" else "Сіздің жазылымдарыңыз:") + "</b>\n\n"
+        text = f"📋 <b>{get_text(lang, 'subscriptions_list_title')}</b>\n\n"
 
         # Create inline keyboard with delete buttons for each subscription
         buttons = []
@@ -586,7 +586,7 @@ async def cmd_my_subscriptions(message: Message, lang: str, user_id: int, **kwar
             )
 
             # Display station name or coordinates as fallback
-            station_label = "Ближайший датчик качества воздуха:" if lang == "ru" else "Жақын ауа сапасы датчигі:"
+            station_label = get_text(lang, "station_label")
             if nearest_station and nearest_station.name:
                 location_text = f"📍 {station_label} {nearest_station.name}"
             else:
@@ -605,33 +605,33 @@ async def cmd_my_subscriptions(message: Message, lang: str, user_id: int, **kwar
                 hours_left = int(remaining.total_seconds() / 3600)
                 if hours_left > 24:
                     days_left = hours_left // 24
-                    duration_text = f"{days_left} дн." if lang == "ru" else f"{days_left} күн"
+                    duration_text = f"{days_left} {get_text(lang, 'days_suffix')}"
                 else:
-                    duration_text = f"{hours_left} ч." if lang == "ru" else f"{hours_left} с."
-                duration_label = "⏰ Осталось:" if lang == "ru" else "⏰ Қалды:"
+                    duration_text = f"{hours_left} {get_text(lang, 'hours_suffix')}"
+                duration_label = get_text(lang, "time_left_label")
                 text += f"{duration_label} {duration_text}\n"
             else:
-                duration_label = "⏰ Срок:" if lang == "ru" else "⏰ Мерзімі:"
-                forever_text = "Бессрочно" if lang == "ru" else "Мерзімсіз"
+                duration_label = get_text(lang, "duration_label")
+                forever_text = get_text(lang, "forever")
                 text += f"{duration_label} {forever_text}\n"
 
             # Show quiet hours
-            quiet_label = "🌙 Тихие часы:" if lang == "ru" else "🌙 Тыныш сағаттар:"
+            quiet_label = get_text(lang, "quiet_hours_label")
             text += f"{quiet_label} {sub.mute_start:02d}:00-{sub.mute_end:02d}:00\n"
 
             if sub.last_notified_at:
                 time_str = sub.last_notified_at.strftime("%d.%m.%y %H:%M")
-                notified = "🔔 Последнее уведомление:" if lang == "ru" else "🔔 Соңғы хабарландыру:"
+                notified = get_text(lang, "last_notification_label")
                 text += f"{notified} {time_str}\n"
             if sub.last_aqi_level:
-                aqi_label = "💨 Последний AQI:" if lang == "ru" else "💨 Соңғы AQI:"
+                aqi_label = get_text(lang, "last_aqi_label")
                 text += f"{aqi_label} {sub.last_aqi_level}\n"
             text += "\n"
 
             # Add edit and delete buttons for this subscription
             edit_text = get_text(lang, "edit_subscription")
             delete_text = get_text(lang, "delete_subscription")
-            show_station_text = "📍 Показать, где находится датчик" if lang == "ru" else "📍 Датчик қайда екенін көрсету"
+            show_station_text = get_text(lang, "show_station_button")
 
             # Add number suffix only if multiple subscriptions
             if show_numbers:
@@ -703,7 +703,7 @@ async def handle_edit_subscription(callback: CallbackQuery, state: FSMContext, l
 
             if not subscription:
                 await callback.answer(
-                    "❌ Подписка не найдена" if lang == "ru" else "❌ Жазылым табылмады",
+                    get_text(lang, "subscription_not_found"),
                     show_alert=True
                 )
                 return
@@ -739,7 +739,7 @@ async def handle_edit_subscription(callback: CallbackQuery, state: FSMContext, l
     except Exception as e:
         logger.error(f"Error editing subscription for user {user_id}: {e}", exc_info=True)
         await callback.answer(
-            "❌ Произошла ошибка" if lang == "ru" else "❌ Қате орын алды",
+            get_text(lang, "error_general"),
             show_alert=True
         )
 
@@ -816,7 +816,7 @@ async def handle_edit_menu_selection(callback: CallbackQuery, state: FSMContext,
     except Exception as e:
         logger.error(f"Error in edit menu selection: {e}", exc_info=True)
         await callback.answer(
-            "❌ Произошла ошибка" if lang == "ru" else "❌ Қате орын алды",
+            get_text(lang, "error_general"),
             show_alert=True
         )
 
@@ -861,7 +861,7 @@ async def handle_edit_duration_selection(callback: CallbackQuery, state: FSMCont
 
         if not subscription:
             await callback.answer(
-                "❌ Подписка не найдена" if lang == "ru" else "❌ Жазылым табылмады",
+                get_text(lang, "subscription_not_found"),
                 show_alert=True
             )
             await state.clear()
@@ -919,7 +919,7 @@ async def handle_edit_quiet_hours_selection(callback: CallbackQuery, state: FSMC
 
             if not subscription:
                 await callback.answer(
-                    "❌ Подписка не найдена" if lang == "ru" else "❌ Жазылым табылмады",
+                    get_text(lang, "subscription_not_found"),
                     show_alert=True
                 )
                 await state.clear()
@@ -997,7 +997,7 @@ async def handle_edit_custom_quiet_hours(message: Message, state: FSMContext, la
 
         if not subscription:
             await message.answer(
-                "❌ Подписка не найдена" if lang == "ru" else "❌ Жазылым табылмады",
+                get_text(lang, "subscription_not_found"),
                 reply_markup=get_main_menu_keyboard(lang)
             )
             await state.clear()
@@ -1048,7 +1048,7 @@ async def handle_safety_net_activation(callback: CallbackQuery, lang: str, user_
 
             if not subscription:
                 await callback.answer(
-                    "❌ Подписка не найдена" if lang == "ru" else "❌ Жазылым табылмады",
+                    get_text(lang, "subscription_not_found"),
                     show_alert=True
                 )
                 return
@@ -1063,7 +1063,7 @@ async def handle_safety_net_activation(callback: CallbackQuery, lang: str, user_
 
             if not nearest_station or nearest_station.aqi is None:
                 await callback.answer(
-                    "❌ Не удалось получить текущий AQI" if lang == "ru" else "❌ Ағымдағы AQI алу мүмкін болмады",
+                    get_text(lang, "failed_to_get_aqi"),
                     show_alert=True
                 )
                 return
@@ -1078,7 +1078,7 @@ async def handle_safety_net_activation(callback: CallbackQuery, lang: str, user_
 
             if existing_session.scalars().first():
                 await callback.answer(
-                    "ℹ️ Мониторинг уже активирован" if lang == "ru" else "ℹ️ Мониторинг қазірдің өзінде белсенді",
+                    get_text(lang, "monitoring_already_active"),
                     show_alert=True
                 )
                 return
@@ -1104,7 +1104,7 @@ async def handle_safety_net_activation(callback: CallbackQuery, lang: str, user_
     except Exception as e:
         logger.error(f"Error activating safety net for user {user_id}: {e}", exc_info=True)
         await callback.answer(
-            "❌ Произошла ошибка" if lang == "ru" else "❌ Қате орын алды",
+            get_text(lang, "error_general"),
             show_alert=True
         )
 
@@ -1132,7 +1132,7 @@ async def handle_show_station(callback: CallbackQuery, lang: str, user_id: int, 
 
             if not subscription:
                 await callback.answer(
-                    "❌ Подписка не найдена" if lang == "ru" else "❌ Жазылым табылмады",
+                    get_text(lang, "subscription_not_found"),
                     show_alert=True
                 )
                 return
@@ -1149,7 +1149,7 @@ async def handle_show_station(callback: CallbackQuery, lang: str, user_id: int, 
 
             if not nearest_station:
                 await callback.answer(
-                    "❌ Станция не найдена" if lang == "ru" else "❌ Станция табылмады",
+                    get_text(lang, "station_not_found"),
                     show_alert=True
                 )
                 return
@@ -1173,7 +1173,7 @@ async def handle_show_station(callback: CallbackQuery, lang: str, user_id: int, 
     except Exception as e:
         logger.error(f"Error showing station for user {user_id}: {e}", exc_info=True)
         await callback.answer(
-            "❌ Произошла ошибка" if lang == "ru" else "❌ Қате орын алды",
+            get_text(lang, "error_general"),
             show_alert=True
         )
 
@@ -1201,7 +1201,7 @@ async def handle_unsubscribe(callback: CallbackQuery, lang: str, user_id: int, *
 
             if not subscription:
                 await callback.answer(
-                    "❌ Подписка не найдена" if lang == "ru" else "❌ Жазылым табылмады",
+                    get_text(lang, "subscription_not_found"),
                     show_alert=True
                 )
                 return
@@ -1229,6 +1229,6 @@ async def handle_unsubscribe(callback: CallbackQuery, lang: str, user_id: int, *
     except Exception as e:
         logger.error(f"Error unsubscribing user {user_id}: {e}", exc_info=True)
         await callback.answer(
-            "❌ Произошла ошибка" if lang == "ru" else "❌ Қате орын алды",
+            get_text(lang, "error_general"),
             show_alert=True
         )

@@ -27,7 +27,7 @@ async def info_pm25_callback(callback: CallbackQuery, lang: str, **kwargs):
     station_id = parts[2] if len(parts) > 2 else None
 
     # Add return button with station_id
-    return_button_text = "⬇️ Вернуться к отчету о воздухе" if lang == "ru" else "⬇️ Ауа есебіне оралу"
+    return_button_text = get_text(lang, "return_to_air_report")
     callback_data = f"return_to_report:{station_id}" if station_id else "return_to_report"
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(
@@ -54,7 +54,7 @@ async def info_pm10_callback(callback: CallbackQuery, lang: str, **kwargs):
     station_id = parts[2] if len(parts) > 2 else None
 
     # Add return button with station_id
-    return_button_text = "⬇️ Вернуться к отчету о воздухе" if lang == "ru" else "⬇️ Ауа есебіне оралу"
+    return_button_text = get_text(lang, "return_to_air_report")
     callback_data = f"return_to_report:{station_id}" if station_id else "return_to_report"
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(
@@ -81,7 +81,7 @@ async def info_pm1_callback(callback: CallbackQuery, lang: str, **kwargs):
     station_id = parts[2] if len(parts) > 2 else None
 
     # Add return button with station_id
-    return_button_text = "⬇️ Вернуться к отчету о воздухе" if lang == "ru" else "⬇️ Ауа есебіне оралу"
+    return_button_text = get_text(lang, "return_to_air_report")
     callback_data = f"return_to_report:{station_id}" if station_id else "return_to_report"
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(
@@ -108,7 +108,7 @@ async def info_aqi_callback(callback: CallbackQuery, lang: str, **kwargs):
     station_id = parts[2] if len(parts) > 2 else None
 
     # Add return button with station_id
-    return_button_text = "⬇️ Вернуться к отчету о воздухе" if lang == "ru" else "⬇️ Ауа есебіне оралу"
+    return_button_text = get_text(lang, "return_to_air_report")
     callback_data = f"return_to_report:{station_id}" if station_id else "return_to_report"
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(
@@ -126,14 +126,14 @@ async def return_to_report_callback(callback: CallbackQuery, lang: str, user_id:
     """Handle return to report button click - re-send air quality report"""
     try:
         # Answer callback immediately to show loading indicator
-        loading_text = "🔍 Загрузка..." if lang == "ru" else "🔍 Жүктеу..."
+        loading_text = get_text(lang, "loading")
         await callback.answer(loading_text)
 
         # Extract station_id from callback data
         parts = callback.data.split(":")
         if len(parts) < 2:
             # No station_id provided - just acknowledge
-            error_msg = "❌ Станция не найдена" if lang == "ru" else "❌ Станция табылмады"
+            error_msg = get_text(lang, "station_not_found")
             await callback.message.answer(error_msg)
             return
 
@@ -211,7 +211,7 @@ async def return_to_report_callback(callback: CallbackQuery, lang: str, user_id:
 
             # Restore main menu keyboard with a small message
             from app.bot.keyboards.reply import get_main_menu_keyboard
-            menu_text = "📋 Главное меню" if lang == "ru" else "📋 Басты мәзір"
+            menu_text = get_text(lang, "main_menu_button")
             await callback.message.answer(
                 menu_text,
                 reply_markup=get_main_menu_keyboard(lang)
@@ -267,7 +267,7 @@ async def show_station_location_callback(callback: CallbackQuery, lang: str, **k
     except Exception as e:
         logger.error(f"Error showing station location: {e}", exc_info=True)
         await callback.answer(
-            "❌ Произошла ошибка" if lang == "ru" else "❌ Қате орын алды",
+            get_text(lang, "error_general"),
             show_alert=True
         )
 
@@ -282,9 +282,7 @@ async def chart_24h_callback(callback: CallbackQuery, lang: str, user_id: int, *
 
         if request_count and request_count > 3:
             await callback.answer(
-                "⏱ Слишком много запросов. Пожалуйста, подождите минуту."
-                if lang == "ru"
-                else "⏱ Тым көп сұраныс. Бір минут күтіңіз.",
+                get_text(lang, "rate_limit_chart"),
                 show_alert=True
             )
             return
@@ -299,7 +297,7 @@ async def chart_24h_callback(callback: CallbackQuery, lang: str, user_id: int, *
 
         # Show "generating" message
         await callback.answer(
-            "📊 Генерирую график..." if lang == "ru" else "📊 График құрамын...",
+            get_text(lang, "generating_chart"),
             show_alert=False
         )
 
@@ -312,7 +310,7 @@ async def chart_24h_callback(callback: CallbackQuery, lang: str, user_id: int, *
 
             if not station:
                 await callback.message.answer(
-                    "❌ Станция не найдена" if lang == "ru" else "❌ Станция табылмады"
+                    get_text(lang, "station_not_found")
                 )
                 return
 
@@ -324,11 +322,7 @@ async def chart_24h_callback(callback: CallbackQuery, lang: str, user_id: int, *
             if chart_bytes:
                 # Send chart as photo
                 photo = BufferedInputFile(chart_bytes, filename=f"chart_{station.station_id}.png")
-                caption = (
-                    f"📊 График качества воздуха за 24 часа\n📍 {station.name}"
-                    if lang == "ru"
-                    else f"📊 Ауа сапасының 24 сағаттық графигі\n📍 {station.name}"
-                )
+                caption = get_text(lang, "chart_24h_caption", name=station.name)
                 await callback.message.answer_photo(
                     photo=photo,
                     caption=caption
@@ -336,14 +330,12 @@ async def chart_24h_callback(callback: CallbackQuery, lang: str, user_id: int, *
             else:
                 # Not enough data
                 await callback.message.answer(
-                    "❌ Недостаточно данных для построения графика. Попробуйте позже."
-                    if lang == "ru"
-                    else "❌ Графикті құру үшін деректер жеткіліксіз. Кейінірек қайталап көріңіз."
+                    get_text(lang, "no_data_for_chart")
                 )
 
     except Exception as e:
         logger.error(f"Error generating 24h chart: {e}", exc_info=True)
         await callback.answer(
-            "❌ Ошибка при создании графика" if lang == "ru" else "❌ График жасауда қате",
+            get_text(lang, "chart_error"),
             show_alert=True
         )

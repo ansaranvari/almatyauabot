@@ -273,6 +273,45 @@ LOCALES = {
             "• Данные берутся с ближайшей станции (обновление каждый час)\n\n"
             "👤 Написать автору: @ansanv"
         ),
+
+        # Common UI elements
+        "favorites_list_title": "Избранные места:",
+        "subscriptions_list_title": "Ваши подписки:",
+        "check_button": "🔍 Проверить",
+        "delete_button": "🗑 Удалить",
+        "loading": "🔍 Загрузка...",
+        "main_menu_button": "📋 Главное меню",
+        "station_label": "Ближайший датчик качества воздуха:",
+        "time_left_label": "⏰ Осталось:",
+        "duration_label": "⏰ Срок:",
+        "forever": "Бессрочно",
+        "quiet_hours_label": "🌙 Тихие часы:",
+        "last_notification_label": "🔔 Последнее уведомление:",
+        "last_aqi_label": "💨 Последний AQI:",
+        "show_station_button": "📍 Показать, где находится датчик",
+        "days_suffix": "дн.",
+        "hours_suffix": "ч.",
+        "return_to_air_report": "⬇️ Вернуться к отчету о воздухе",
+        "generating_chart": "📊 Генерирую график...",
+
+        # Error messages
+        "error_general": "❌ Произошла ошибка",
+        "subscription_not_found": "❌ Подписка не найдена",
+        "station_not_found": "❌ Станция не найдена",
+        "chart_error": "❌ Ошибка при создании графика",
+        "monitoring_activated": "✅ Мониторинг активирован",
+        "monitoring_already_active": "ℹ️ Мониторинг уже активирован",
+        "failed_to_get_aqi": "❌ Не удалось получить текущий AQI",
+        "rate_limit_chart": "⏱ Слишком много запросов. Пожалуйста, подождите минуту.",
+        "chart_24h_caption": "📊 График качества воздуха за 24 часа\n📍 {name}",
+        "no_data_for_chart": "❌ Недостаточно данных для построения графика. Попробуйте позже.",
+        "no_sensors_in_area": (
+            "❌ <b>К сожалению, в вашем районе нет датчиков мониторинга.</b>\n\n"
+            "📍 Ближайший датчик с данными:\n"
+            "   • {nearest_name}\n"
+            "   • Расстояние: {distance_km:.1f} км\n\n"
+            "💡 <i>Датчики качества воздуха пока доступны только в Алматы. Мы добавим другие города, когда появятся датчики.</i>"
+        ),
     },
 
     "kk": {
@@ -547,6 +586,45 @@ LOCALES = {
             "• Деректер жақын станциядан алынады (сағат сайын жаңарту)\n\n"
             "👤 Авторға жазу: @ansanv"
         ),
+
+        # Common UI elements
+        "favorites_list_title": "Таңдаулы орындар:",
+        "subscriptions_list_title": "Сіздің жазылымдарыңыз:",
+        "check_button": "🔍 Тексеру",
+        "delete_button": "🗑 Өшіру",
+        "loading": "🔍 Жүктеу...",
+        "main_menu_button": "📋 Басты мәзір",
+        "station_label": "Жақын ауа сапасы датчигі:",
+        "time_left_label": "⏰ Қалды:",
+        "duration_label": "⏰ Мерзімі:",
+        "forever": "Мерзімсіз",
+        "quiet_hours_label": "🌙 Тыныш сағаттар:",
+        "last_notification_label": "🔔 Соңғы хабарландыру:",
+        "last_aqi_label": "💨 Соңғы AQI:",
+        "show_station_button": "📍 Датчик қайда екенін көрсету",
+        "days_suffix": "күн",
+        "hours_suffix": "с.",
+        "return_to_air_report": "⬇️ Ауа есебіне оралу",
+        "generating_chart": "📊 График құрамын...",
+
+        # Error messages
+        "error_general": "❌ Қате орын алды",
+        "subscription_not_found": "❌ Жазылым табылмады",
+        "station_not_found": "❌ Станция табылмады",
+        "chart_error": "❌ График жасауда қате",
+        "monitoring_activated": "✅ Мониторинг белсенді",
+        "monitoring_already_active": "ℹ️ Мониторинг қазірдің өзінде белсенді",
+        "failed_to_get_aqi": "❌ Ағымдағы AQI алу мүмкін болмады",
+        "rate_limit_chart": "⏱ Тым көп сұраныс. Бір минут күтіңіз.",
+        "chart_24h_caption": "📊 Ауа сапасының 24 сағаттық графигі\n📍 {name}",
+        "no_data_for_chart": "❌ Графикті құру үшін деректер жеткіліксіз. Кейінірек қайталап көріңіз.",
+        "no_sensors_in_area": (
+            "❌ <b>Өкінішке орай, сіздің аудандарыңызда мониторинг датчиктері жоқ.</b>\n\n"
+            "📍 Деректері бар жақын датчик:\n"
+            "   • {nearest_name}\n"
+            "   • Қашықтық: {distance_km:.1f} км\n\n"
+            "💡 <i>Ауа сапасы датчиктері әзірше тек Алматыда қол жетімді. Басқа қалаларда датчиктер пайда болғанда қосамыз.</i>"
+        ),
     },
 
     "en": {
@@ -820,6 +898,45 @@ LOCALES = {
             "• Thanks to <b>Almaty Air Initiative</b> for providing <a href=\"https://api.air.org.kz/docs\">open data sources</a>\n"
             "• Data from nearest station (updated hourly)\n\n"
             "👤 Contact author: @ansanv"
+        ),
+
+        # Common UI elements
+        "favorites_list_title": "Favorite Places:",
+        "subscriptions_list_title": "Your Subscriptions:",
+        "check_button": "🔍 Check",
+        "delete_button": "🗑 Delete",
+        "loading": "🔍 Loading...",
+        "main_menu_button": "📋 Main Menu",
+        "station_label": "Nearest air quality sensor:",
+        "time_left_label": "⏰ Time left:",
+        "duration_label": "⏰ Duration:",
+        "forever": "Forever",
+        "quiet_hours_label": "🌙 Quiet hours:",
+        "last_notification_label": "🔔 Last notification:",
+        "last_aqi_label": "💨 Last AQI:",
+        "show_station_button": "📍 Show sensor location",
+        "days_suffix": "d",
+        "hours_suffix": "h",
+        "return_to_air_report": "⬇️ Return to air report",
+        "generating_chart": "📊 Generating chart...",
+
+        # Error messages
+        "error_general": "❌ An error occurred",
+        "subscription_not_found": "❌ Subscription not found",
+        "station_not_found": "❌ Station not found",
+        "chart_error": "❌ Error generating chart",
+        "monitoring_activated": "✅ Monitoring activated",
+        "monitoring_already_active": "ℹ️ Monitoring already active",
+        "failed_to_get_aqi": "❌ Failed to get current AQI",
+        "rate_limit_chart": "⏱ Too many requests. Please wait a minute.",
+        "chart_24h_caption": "📊 24-hour air quality chart\n📍 {name}",
+        "no_data_for_chart": "❌ Not enough data to build the chart. Please try again later.",
+        "no_sensors_in_area": (
+            "❌ <b>Unfortunately, there are no monitoring sensors in your area.</b>\n\n"
+            "📍 Nearest sensor with data:\n"
+            "   • {nearest_name}\n"
+            "   • Distance: {distance_km:.1f} km\n\n"
+            "💡 <i>Air quality sensors are currently only available in Almaty. We'll add other cities when sensors become available.</i>"
         ),
     }
 }

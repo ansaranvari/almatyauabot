@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.message(F.text.in_([
-    "🔍 Проверить качество воздуха", "🔍 Ауа сапасын тексеру"
+    "🔍 Проверить качество воздуха", "🔍 Ауа сапасын тексеру", "🔍 Check Air Quality"
 ]))
 async def cmd_check_air(message: Message, lang: str, user_id: int, **kwargs):
     """
@@ -133,22 +133,7 @@ async def process_air_quality_check(message: Message, bot: Bot, lang: str, user_
                 distance_km = distance_meters / 1000.0
 
                 # Enhanced error message with nearest coverage info
-                if lang == "ru":
-                    error_msg = (
-                        f"❌ <b>К сожалению, в вашем районе нет датчиков мониторинга.</b>\n\n"
-                        f"📍 Ближайший датчик с данными:\n"
-                        f"   • {nearest_anywhere.name}\n"
-                        f"   • Расстояние: {distance_km:.1f} км\n\n"
-                        f"💡 <i>Датчики качества воздуха пока доступны только в Алматы. Мы добавим другие города, когда появятся датчики.</i>"
-                    )
-                else:
-                    error_msg = (
-                        f"❌ <b>Өкінішке орай, сіздің аудандарыңызда мониторинг датчиктері жоқ.</b>\n\n"
-                        f"📍 Деректері бар жақын датчик:\n"
-                        f"   • {nearest_anywhere.name}\n"
-                        f"   • Қашықтық: {distance_km:.1f} км\n\n"
-                        f"💡 <i>Ауа сапасы датчиктері әзірше тек Алматыда қол жетімді. Басқа қалаларда датчиктер пайда болғанда қосамыз.</i>"
-                    )
+                error_msg = get_text(lang, "no_sensors_in_area", nearest_name=nearest_anywhere.name, distance_km=distance_km)
             else:
                 # No stations at all in database
                 error_msg = get_text(lang, "no_stations_found")
@@ -239,7 +224,7 @@ async def process_air_quality_check(message: Message, bot: Bot, lang: str, user_
         )
 
         # Restore main menu keyboard
-        menu_text = "📋 Главное меню" if lang == "ru" else "📋 Басты мәзір"
+        menu_text = get_text(lang, "main_menu_button")
         await message.answer(
             menu_text,
             reply_markup=get_main_menu_keyboard(lang)
@@ -272,7 +257,7 @@ async def process_air_quality_check(message: Message, bot: Bot, lang: str, user_
 
 @router.message(
     F.text.startswith("⭐ ") &
-    ~F.text.in_(["⭐ Избранные места", "⭐ Таңдаулы орындар"])
+    ~F.text.in_(["⭐ Избранные места", "⭐ Таңдаулы орындар", "⭐ Favorite Places"])
 )
 async def handle_favorite_button(message: Message, bot: Bot, lang: str, user_id: int, **kwargs):
     """Handle favorite location button click"""

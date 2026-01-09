@@ -27,7 +27,7 @@ async def cmd_start(message: Message, lang: str, user_id: int, **kwargs):
 
 
 @router.message(F.text.in_([
-    "ℹ️ Помощь", "ℹ️ Көмек"
+    "ℹ️ Помощь", "ℹ️ Көмек", "ℹ️ Help"
 ]))
 async def cmd_help(message: Message, lang: str, user_id: int, **kwargs):
     """Handle help button"""
@@ -42,7 +42,7 @@ async def cmd_help(message: Message, lang: str, user_id: int, **kwargs):
 
 
 @router.message(F.text.in_([
-    "◀️ Назад в меню", "◀️ Мәзірге оралу"
+    "◀️ Назад в меню", "◀️ Мәзірге оралу", "◀️ Back to Menu"
 ]))
 async def cmd_back_to_menu(message: Message, state: FSMContext, lang: str, **kwargs):
     """

@@ -24,7 +24,7 @@ class FavoriteStates(StatesGroup):
 
 
 @router.message(F.text.in_([
-    "⭐ Избранные места", "⭐ Таңдаулы орындар"
+    "⭐ Избранные места", "⭐ Таңдаулы орындар", "⭐ Favorite Places"
 ]))
 async def cmd_my_favorites(message: Message, lang: str, user_id: int, **kwargs):
     """Show user's favorite locations with quick check buttons"""
@@ -42,15 +42,15 @@ async def cmd_my_favorites(message: Message, lang: str, user_id: int, **kwargs):
             return
 
         # Format favorites list
-        text = "⭐ <b>" + ("Избранные места:" if lang == "ru" else "Таңдаулы орындар:") + "</b>\n\n"
+        text = f"⭐ <b>{get_text(lang, 'favorites_list_title')}</b>\n\n"
 
         buttons = []
         for i, fav in enumerate(favorites, 1):
             text += f"{i}. {fav.name}\n"
 
             # Quick check button
-            check_text = "🔍 Проверить" if lang == "ru" else "🔍 Тексеру"
-            delete_text = "🗑 Удалить" if lang == "ru" else "🗑 Өшіру"
+            check_text = get_text(lang, "check_button")
+            delete_text = get_text(lang, "delete_button")
 
             buttons.append([
                 InlineKeyboardButton(
@@ -77,7 +77,7 @@ async def handle_check_favorite(callback: CallbackQuery, lang: str, user_id: int
     """Check air quality for a favorite location"""
     try:
         # Answer callback immediately to show loading indicator
-        loading_text = "🔍 Загрузка..." if lang == "ru" else "🔍 Жүктеу..."
+        loading_text = get_text(lang, "loading")
         await callback.answer(loading_text)
 
         favorite_id = int(callback.data.split(":")[1])
@@ -145,7 +145,7 @@ async def handle_check_favorite(callback: CallbackQuery, lang: str, user_id: int
             )
 
             # Restore main menu keyboard
-            menu_text = "📋 Главное меню" if lang == "ru" else "📋 Басты мәзір"
+            menu_text = get_text(lang, "main_menu_button")
             await callback.message.answer(
                 menu_text,
                 reply_markup=get_main_menu_keyboard(lang)
