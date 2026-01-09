@@ -276,7 +276,7 @@
         fetch('/admin/api/stats')
             .then(response => response.json())
             .then(data => {
-                // Active Users Chart - showing New vs Returning users
+                // Active Users Chart - stacked area showing New vs Returning users
                 new Chart(document.getElementById('activeUsersChart'), {
                     type: 'line',
                     data: {
@@ -286,7 +286,7 @@
                                 label: 'New Users',
                                 data: data.new_users,
                                 borderColor: '#27ae60',
-                                backgroundColor: 'rgba(39, 174, 96, 0.2)',
+                                backgroundColor: 'rgba(39, 174, 96, 0.6)',
                                 tension: 0.4,
                                 fill: true
                             },
@@ -294,7 +294,7 @@
                                 label: 'Returning Users',
                                 data: data.returning_users,
                                 borderColor: '#3498db',
-                                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                                backgroundColor: 'rgba(52, 152, 219, 0.6)',
                                 tension: 0.4,
                                 fill: true
                             }
@@ -303,18 +303,37 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
                         plugins: {
                             legend: {
                                 display: true,
                                 position: 'top'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    footer: function(tooltipItems) {
+                                        let total = 0;
+                                        tooltipItems.forEach(function(tooltipItem) {
+                                            total += tooltipItem.parsed.y;
+                                        });
+                                        return 'Total: ' + total;
+                                    }
+                                }
                             }
                         },
                         scales: {
                             y: {
+                                stacked: true,
                                 beginAtZero: true,
                                 ticks: {
                                     stepSize: 1
                                 }
+                            },
+                            x: {
+                                stacked: true
                             }
                         }
                     }
