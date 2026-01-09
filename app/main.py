@@ -161,8 +161,10 @@ async def lifespan(app: FastAPI):
         except asyncio.CancelledError:
             pass
 
-    # Delete webhook
-    await bot.delete_webhook(drop_pending_updates=True)
+    # Don't delete webhook on shutdown - it should persist across deployments
+    # Only delete webhook if you're permanently shutting down the bot
+    # await bot.delete_webhook(drop_pending_updates=True)
+    logger.info("Skipping webhook deletion (webhook persists across deployments)")
 
     # Disconnect from Redis
     await cache.disconnect()
