@@ -175,7 +175,21 @@
             <div class="stat-card">
                 <div class="stat-label">Active Today</div>
                 <div class="stat-value">{{ today_stats.active_users if today_stats else 0 }}</div>
+                {% if today_stats and (today_stats.new_users > 0 or today_stats.returning_users > 0) %}
+                <div class="stat-change">
+                    {% if today_stats.new_users > 0 %}
+                        <span style="color: #27ae60;">{{ today_stats.new_users }} new</span>
+                    {% endif %}
+                    {% if today_stats.new_users > 0 and today_stats.returning_users > 0 %}
+                        <span style="color: #7f8c8d;">, </span>
+                    {% endif %}
+                    {% if today_stats.returning_users > 0 %}
+                        <span style="color: #3498db;">{{ today_stats.returning_users }} returning</span>
+                    {% endif %}
+                </div>
+                {% else %}
                 <div class="stat-change">Unique users</div>
+                {% endif %}
             </div>
 
             <div class="stat-card">
@@ -284,15 +298,18 @@
                     }
                 });
 
-                // New Users Chart
+                // New Users Chart (Line)
                 new Chart(document.getElementById('newUsersChart'), {
-                    type: 'bar',
+                    type: 'line',
                     data: {
                         labels: data.dates,
                         datasets: [{
                             label: 'New Users',
                             data: data.new_users,
-                            backgroundColor: '#27ae60',
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                            tension: 0.4,
+                            fill: true
                         }]
                     },
                     options: {
@@ -304,7 +321,10 @@
                         },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
                             }
                         }
                     }

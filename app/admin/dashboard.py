@@ -68,12 +68,15 @@ async def admin_dashboard(
             )
             active_today = active_today_result.scalar() or 0
 
-            # Get new users today
+            # Get new users today (users created today)
             new_users_today_result = await db.execute(
                 select(func.count(User.id))
                 .where(User.created_at >= today_utc_naive)
             )
             new_users_today = new_users_today_result.scalar() or 0
+
+            # Calculate returning users today (active today but not new)
+            returning_users_today = active_today - new_users_today if active_today > new_users_today else 0
 
             # Get air quality checks today (count of check_air_clicked events)
             air_checks_today_result = await db.execute(
@@ -102,13 +105,14 @@ async def admin_dashboard(
                 today_stats = TodayStats()
                 today_stats.active_users = active_today
                 today_stats.new_users = new_users_today
+                today_stats.returning_users = returning_users_today
                 today_stats.air_checks = air_checks_today
                 today_stats.unique_air_checkers = unique_air_checkers
-                today_stats.returning_users = 0
             else:
                 # Override with real-time data
                 today_stats.active_users = active_today
                 today_stats.new_users = new_users_today
+                today_stats.returning_users = returning_users_today
                 today_stats.air_checks = air_checks_today
                 today_stats.unique_air_checkers = unique_air_checkers
 
