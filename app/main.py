@@ -126,9 +126,10 @@ async def lifespan(app: FastAPI):
     subscription_task = asyncio.create_task(subscription_checker.start_scheduler())
 
     # Start webhook monitor in background (only if webhook is configured)
+    # Monitor will run an immediate check on startup, then every 5 minutes
     monitor_task = None
     if webhook_url:
-        logger.info("Starting webhook monitor background task")
+        logger.info("Starting webhook monitor background task (immediate startup check enabled)")
         webhook_monitor.configure(bot, webhook_url, settings.BOT_TOKEN)
         monitor_task = asyncio.create_task(webhook_monitor.start_monitor())
 

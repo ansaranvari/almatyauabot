@@ -71,14 +71,21 @@ class WebhookMonitor:
         logger.info(f"Starting webhook monitor (checks every {check_interval // 60} minutes)")
         self.is_running = True
 
+        # Run first check immediately on startup (don't wait 5 minutes)
+        logger.info("Running immediate webhook check on startup...")
+        try:
+            await self.check_and_fix_webhook()
+        except Exception as e:
+            logger.error(f"Initial webhook check failed: {e}", exc_info=True)
+
         while self.is_running:
+            # Wait for next check
+            await asyncio.sleep(check_interval)
+
             try:
                 await self.check_and_fix_webhook()
             except Exception as e:
                 logger.error(f"Webhook monitor task failed: {e}", exc_info=True)
-
-            # Wait for next check
-            await asyncio.sleep(check_interval)
 
     def stop(self):
         """Stop the monitoring loop"""
