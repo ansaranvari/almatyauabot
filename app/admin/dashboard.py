@@ -222,8 +222,8 @@ async def get_stats_api(username: str = Depends(verify_admin_credentials)):
         )
         daily_stats = daily_stats_result.scalars().all()
 
-        # Format for charts
-        dates = [stat.date.strftime("%Y-%m-%d") for stat in daily_stats]
+        # Format for charts - use CIS date format (DD.MM)
+        dates = [stat.date.strftime("%d.%m") for stat in daily_stats]
         active_users = [stat.active_users for stat in daily_stats]
         new_users = [stat.new_users for stat in daily_stats]
         total_messages = [stat.total_messages for stat in daily_stats]
@@ -232,7 +232,8 @@ async def get_stats_api(username: str = Depends(verify_admin_credentials)):
         now_almaty = datetime.now(ALMATY_TZ)
         today_almaty = now_almaty.replace(hour=0, minute=0, second=0, microsecond=0)
         today_utc_naive = today_almaty.astimezone(ZoneInfo("UTC")).replace(tzinfo=None)
-        today_str = today_utc_naive.strftime("%Y-%m-%d")
+        # Use Almaty date for display (not UTC date which shows yesterday!)
+        today_str = today_almaty.strftime("%d.%m")
 
         # Check if today is already in the data
         if not dates or dates[-1] != today_str:
