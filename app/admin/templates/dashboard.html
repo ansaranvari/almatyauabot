@@ -219,8 +219,8 @@
             </div>
 
             <div class="chart-container">
-                <h2 class="chart-title">New Users (Last 30 Days)</h2>
-                <canvas id="newUsersChart"></canvas>
+                <h2 class="chart-title">Air Quality Checks (Last 30 Days)</h2>
+                <canvas id="airChecksChart"></canvas>
             </div>
         </div>
 
@@ -276,16 +276,60 @@
         fetch('/admin/api/stats')
             .then(response => response.json())
             .then(data => {
-                // Active Users Chart
+                // Active Users Chart - showing New vs Returning users
                 new Chart(document.getElementById('activeUsersChart'), {
                     type: 'line',
                     data: {
                         labels: data.dates,
+                        datasets: [
+                            {
+                                label: 'New Users',
+                                data: data.new_users,
+                                borderColor: '#27ae60',
+                                backgroundColor: 'rgba(39, 174, 96, 0.2)',
+                                tension: 0.4,
+                                fill: true
+                            },
+                            {
+                                label: 'Returning Users',
+                                data: data.returning_users,
+                                borderColor: '#3498db',
+                                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                                tension: 0.4,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Air Quality Checks Chart
+                new Chart(document.getElementById('airChecksChart'), {
+                    type: 'line',
+                    data: {
+                        labels: data.dates,
                         datasets: [{
-                            label: 'Active Users',
-                            data: data.active_users,
-                            borderColor: '#3498db',
-                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            label: 'Air Quality Checks',
+                            data: data.air_checks,
+                            borderColor: '#9b59b6',
+                            backgroundColor: 'rgba(155, 89, 182, 0.1)',
                             tension: 0.4,
                             fill: true
                         }]
@@ -301,39 +345,6 @@
                         scales: {
                             y: {
                                 beginAtZero: true
-                            }
-                        }
-                    }
-                });
-
-                // New Users Chart (Line)
-                new Chart(document.getElementById('newUsersChart'), {
-                    type: 'line',
-                    data: {
-                        labels: data.dates,
-                        datasets: [{
-                            label: 'New Users',
-                            data: data.new_users,
-                            borderColor: '#27ae60',
-                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
                             }
                         }
                     }

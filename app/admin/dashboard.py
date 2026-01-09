@@ -226,7 +226,9 @@ async def get_stats_api(username: str = Depends(verify_admin_credentials)):
         dates = [stat.date.strftime("%d.%m") for stat in daily_stats]
         active_users = [stat.active_users for stat in daily_stats]
         new_users = [stat.new_users for stat in daily_stats]
+        returning_users = [stat.returning_users for stat in daily_stats]
         total_messages = [stat.total_messages for stat in daily_stats]
+        air_checks = [stat.air_checks if hasattr(stat, 'air_checks') else 0 for stat in daily_stats]
 
         # Add today's real-time data if it's not already in the daily_stats
         now_almaty = datetime.now(ALMATY_TZ)
@@ -250,15 +252,45 @@ async def get_stats_api(username: str = Depends(verify_admin_credentials)):
             )
             new_users_today = new_users_today_result.scalar() or 0
 
+            # Calculate returning users today
+            yesterday_utc_naive = today_utc_naive - timedelta(days=1)
+            returning_users_today_result = await db.execute(
+                select(func.count(func.distinct(UserEvent.user_id)))
+                .where(
+                    UserEvent.timestamp >= today_utc_naive,
+                    UserEvent.user_id.in_(
+                        select(UserEvent.user_id).where(
+                            UserEvent.timestamp >= yesterday_utc_naive,
+                            UserEvent.timestamp < today_utc_naive
+                        )
+                    )
+                )
+            )
+            returning_users_today = returning_users_today_result.scalar() or 0
+
+            # Calculate air checks today
+            air_checks_today_result = await db.execute(
+                select(func.count(UserEvent.id))
+                .where(
+                    UserEvent.timestamp >= today_utc_naive,
+                    UserEvent.event_type == 'check_air_clicked'
+                )
+            )
+            air_checks_today = air_checks_today_result.scalar() or 0
+
             # Add today's data to the lists
             dates.append(today_str)
             active_users.append(active_today)
             new_users.append(new_users_today)
+            returning_users.append(returning_users_today)
             total_messages.append(0)  # We don't track messages, so 0
+            air_checks.append(air_checks_today)
 
         return {
             "dates": dates,
             "active_users": active_users,
             "new_users": new_users,
-            "total_messages": total_messages
+            "returning_users": returning_users,
+            "total_messages": total_messages,
+            "air_checks": air_checks
         }
