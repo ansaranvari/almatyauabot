@@ -45,14 +45,8 @@ async def callback_language_select(callback: CallbackQuery, lang: str, user_id: 
     )
 
     # Show main menu keyboard with next step prompt
-    ready_texts = {
-        "ru": "👇 Попробуйте проверить качество воздуха сейчас",
-        "kk": "👇 Қазір ауа сапасын тексеріп көріңіз",
-        "en": "👇 Try checking air quality now"
-    }
-    ready_text = ready_texts.get(selected_lang, ready_texts["en"])
     await callback.message.answer(
-        ready_text,
+        get_text(selected_lang, "ready_prompt"),
         reply_markup=get_main_menu_keyboard(selected_lang)
     )
 
