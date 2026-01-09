@@ -44,7 +44,7 @@ def get_air_quality_info_keyboard(lang: str, station_id: int = None, lat: float 
                 callback_data=f"info:aqi{station_param}"
             ),
             InlineKeyboardButton(
-                text="📊 График 24ч" if lang == "ru" else "📊 24с график",
+                text={"ru": "📊 График 24ч", "kk": "📊 24с график", "en": "📊 24h Chart"}.get(lang, "📊 24h Chart"),
                 callback_data=f"chart:24h{station_param}"
             ),
         ]
@@ -52,7 +52,12 @@ def get_air_quality_info_keyboard(lang: str, station_id: int = None, lat: float 
 
     # Add subscribe to this location button if user location is provided and not already subscribed
     if user_lat and user_lon and show_subscribe:
-        subscribe_text = "🔔 Подписаться на это место" if lang == "ru" else "🔔 Бұл жерге жазылу"
+        subscribe_texts = {
+            "ru": "🔔 Подписаться на это место",
+            "kk": "🔔 Бұл жерге жазылу",
+            "en": "🔔 Subscribe to this location"
+        }
+        subscribe_text = subscribe_texts.get(lang, subscribe_texts["en"])
         buttons.append([
             InlineKeyboardButton(
                 text=subscribe_text,
@@ -62,7 +67,12 @@ def get_air_quality_info_keyboard(lang: str, station_id: int = None, lat: float 
 
     # Add favorite button if user location is provided and not already favorited
     if user_lat and user_lon and show_favorite:
-        add_fav_text = "⭐ Добавить в избранное" if lang == "ru" else "⭐ Таңдаулыға қосу"
+        add_fav_texts = {
+            "ru": "⭐ Добавить в избранное",
+            "kk": "⭐ Таңдаулыға қосу",
+            "en": "⭐ Add to Favorites"
+        }
+        add_fav_text = add_fav_texts.get(lang, add_fav_texts["en"])
         buttons.append([
             InlineKeyboardButton(
                 text=add_fav_text,
@@ -72,7 +82,12 @@ def get_air_quality_info_keyboard(lang: str, station_id: int = None, lat: float 
 
     # Add show station location button if station info is provided
     if station_id and lat and lon:
-        show_station_text = "📍 Показать, где находится датчик" if lang == "ru" else "📍 Датчик қайда екенін көрсету"
+        show_station_texts = {
+            "ru": "📍 Показать, где находится датчик",
+            "kk": "📍 Датчик қайда екенін көрсету",
+            "en": "📍 Show station location"
+        }
+        show_station_text = show_station_texts.get(lang, show_station_texts["en"])
         buttons.append([
             InlineKeyboardButton(
                 text=show_station_text,

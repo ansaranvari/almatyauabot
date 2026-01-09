@@ -216,8 +216,8 @@ async def process_air_quality_check(message: Message, bot: Bot, lang: str, user_
                 station_id=station.id,
                 lat=station.latitude,
                 lon=station.longitude,
-                user_lat=latitude if not (has_subscription and has_favorite) else None,
-                user_lon=longitude if not (has_subscription and has_favorite) else None,
+                user_lat=latitude,
+                user_lon=longitude,
                 show_subscribe=not has_subscription,
                 show_favorite=not has_favorite
             )
