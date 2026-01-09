@@ -105,31 +105,44 @@ class AnalyticsService:
             logger.error(f"Failed to increment feature usage for {feature_name}: {e}")
 
     @staticmethod
-    async def update_daily_stats():
+    async def update_daily_stats(target_date: Optional[date] = None):
         """
-        Update daily user statistics
+        Update daily user statistics for a specific date
+
+        Args:
+            target_date: Date to archive stats for (defaults to today in UTC)
 
         This should be run once per day (scheduled task)
         """
         try:
             async with AsyncSessionLocal() as db:
-                today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+                # Use provided date or default to today
+                if target_date:
+                    today = datetime.combine(target_date, datetime.min.time())
+                else:
+                    today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+
+                tomorrow = today + timedelta(days=1)
                 yesterday = today - timedelta(days=1)
 
                 # Count total users
                 total_users_result = await db.execute(select(func.count(User.id)))
                 total_users = total_users_result.scalar()
 
-                # Count new users (registered today)
+                # Count new users (registered on target day)
                 new_users_result = await db.execute(
-                    select(func.count(User.id)).where(User.created_at >= today)
+                    select(func.count(User.id)).where(
+                        User.created_at >= today,
+                        User.created_at < tomorrow
+                    )
                 )
                 new_users = new_users_result.scalar()
 
-                # Count active users (had events today)
+                # Count active users (had events on target day)
                 active_users_result = await db.execute(
                     select(func.count(func.distinct(UserEvent.user_id))).where(
-                        UserEvent.timestamp >= today
+                        UserEvent.timestamp >= today,
+                        UserEvent.timestamp < tomorrow
                     )
                 )
                 active_users = active_users_result.scalar()
@@ -138,6 +151,7 @@ class AnalyticsService:
                 returning_users_result = await db.execute(
                     select(func.count(func.distinct(UserEvent.user_id))).where(
                         UserEvent.timestamp >= today,
+                        UserEvent.timestamp < tomorrow,
                         UserEvent.user_id.in_(
                             select(UserEvent.user_id).where(
                                 UserEvent.timestamp >= yesterday,
@@ -148,11 +162,34 @@ class AnalyticsService:
                 )
                 returning_users = returning_users_result.scalar()
 
-                # Count total messages today
+                # Count total messages on target day
                 messages_result = await db.execute(
-                    select(func.count(UserEvent.id)).where(UserEvent.timestamp >= today)
+                    select(func.count(UserEvent.id)).where(
+                        UserEvent.timestamp >= today,
+                        UserEvent.timestamp < tomorrow
+                    )
                 )
                 total_messages = messages_result.scalar()
+
+                # Count air quality checks on target day
+                air_checks_result = await db.execute(
+                    select(func.count(UserEvent.id)).where(
+                        UserEvent.timestamp >= today,
+                        UserEvent.timestamp < tomorrow,
+                        UserEvent.event_type == 'check_air_clicked'
+                    )
+                )
+                air_checks = air_checks_result.scalar() or 0
+
+                # Count unique users who checked air quality
+                unique_air_checkers_result = await db.execute(
+                    select(func.count(func.distinct(UserEvent.user_id))).where(
+                        UserEvent.timestamp >= today,
+                        UserEvent.timestamp < tomorrow,
+                        UserEvent.event_type == 'check_air_clicked'
+                    )
+                )
+                unique_air_checkers = unique_air_checkers_result.scalar() or 0
 
                 # Calculate average messages per user
                 avg_messages = total_messages / active_users if active_users > 0 else 0
@@ -173,9 +210,11 @@ class AnalyticsService:
                 stats.returning_users = returning_users
                 stats.total_messages = total_messages
                 stats.avg_messages_per_user = avg_messages
+                stats.air_checks = air_checks
+                stats.unique_air_checkers = unique_air_checkers
 
                 await db.commit()
-                logger.info(f"Updated daily stats: {active_users} active users, {new_users} new users")
+                logger.info(f"Updated daily stats for {today.strftime('%Y-%m-%d')}: {active_users} active users, {new_users} new users, {air_checks} air checks")
         except Exception as e:
             logger.error(f"Failed to update daily stats: {e}", exc_info=True)
 

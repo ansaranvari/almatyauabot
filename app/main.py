@@ -14,6 +14,7 @@ from app.services.cache import cache
 from app.services.sync import data_sync
 from app.services.subscription_checker import subscription_checker
 from app.services.webhook_monitor import webhook_monitor
+from app.services.analytics_scheduler import analytics_scheduler
 from app.bot.handlers import router
 from app.bot.middlewares.i18n import I18nMiddleware
 from app.admin.dashboard import router as admin_router
@@ -125,6 +126,10 @@ async def lifespan(app: FastAPI):
     subscription_checker.set_bot(bot)
     subscription_task = asyncio.create_task(subscription_checker.start_scheduler())
 
+    # Start analytics scheduler in background
+    logger.info("Starting analytics scheduler background task")
+    analytics_task = asyncio.create_task(analytics_scheduler.start_scheduler())
+
     # Start webhook monitor in background (only if webhook is configured)
     # Monitor will run an immediate check on startup, then every 5 minutes
     monitor_task = None
@@ -144,6 +149,7 @@ async def lifespan(app: FastAPI):
     # Cancel background tasks
     sync_task.cancel()
     subscription_task.cancel()
+    analytics_task.cancel()
     if monitor_task:
         monitor_task.cancel()
 
@@ -153,6 +159,10 @@ async def lifespan(app: FastAPI):
         pass
     try:
         await subscription_task
+    except asyncio.CancelledError:
+        pass
+    try:
+        await analytics_task
     except asyncio.CancelledError:
         pass
     if monitor_task:

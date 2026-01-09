@@ -24,6 +24,10 @@ class DailyUserStats(Base):
     total_messages = Column(Integer, default=0)  # Total messages/interactions
     avg_messages_per_user = Column(Float, default=0.0)  # Average interactions per active user
 
+    # Air quality check metrics
+    air_checks = Column(Integer, default=0)  # Total air quality checks
+    unique_air_checkers = Column(Integer, default=0)  # Unique users who checked air quality
+
     created_at = Column(DateTime, default=datetime.utcnow)
 
     __table_args__ = (
