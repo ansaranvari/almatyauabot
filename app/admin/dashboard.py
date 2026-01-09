@@ -237,8 +237,18 @@ async def get_stats_api(username: str = Depends(verify_admin_credentials)):
         # Use Almaty date for display (not UTC date which shows yesterday!)
         today_str = today_almaty.strftime("%d.%m")
 
-        # Check if today is already in the data
-        if not dates or dates[-1] != today_str:
+        # Always recalculate today's data in real-time (don't use cached values)
+        # Remove today from the lists if it exists (we'll add fresh data)
+        if dates and dates[-1] == today_str:
+            dates.pop()
+            active_users.pop()
+            new_users.pop()
+            returning_users.pop()
+            total_messages.pop()
+            air_checks.pop()
+
+        # Now calculate today's stats in real-time
+        if True:  # Always run for today
             # Calculate today's stats in real-time
             active_today_result = await db.execute(
                 select(func.count(func.distinct(UserEvent.user_id)))
