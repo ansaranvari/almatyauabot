@@ -248,8 +248,8 @@ class AnalyticsService:
                 # Count expired subscriptions today
                 expired_subs_result = await db.execute(
                     select(func.count(Subscription.id)).where(
-                        Subscription.expires_at >= today,
-                        Subscription.expires_at < today + timedelta(days=1),
+                        Subscription.expiry_date >= today,
+                        Subscription.expiry_date < today + timedelta(days=1),
                         Subscription.is_active == False
                     )
                 )
