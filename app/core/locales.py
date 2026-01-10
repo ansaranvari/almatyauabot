@@ -97,6 +97,7 @@ LOCALES = {
         "no_subscriptions": "У вас пока нет активных подписок.\n\nНажмите «🔔 Подписаться на чистый воздух» чтобы создать подписку.",
         "subscription_deleted": "✅ Подписка удалена.",
         "subscription_expired": "⏰ Ваша подписка на мониторинг истекла.\n\n📍 {location}\n\nВы можете создать новую подписку в любое время.",
+        "resubscribe_button": "🔔 Подписаться снова",
 
         # Notifications
         "clean_air_notification": "✨ <b>Воздух очистился!</b>\n\nAQI: <b>{aqi}</b>\n📍 {location}\n\n💡 Самое время проветрить комнату или выйти на прогулку.",
@@ -411,6 +412,7 @@ LOCALES = {
         "no_subscriptions": "Сізде әзірге белсенді жазылымдар жоқ.\n\n«🔔 Таза ауаға жазылу» басып жазылым жасаңыз.",
         "subscription_deleted": "✅ Жазылым өшірілді.",
         "subscription_expired": "⏰ Мониторингке жазылымыңыз аяқталды.\n\n📍 {location}\n\nҚалаған уақытта жаңа жазылым жасай аласыз.",
+        "resubscribe_button": "🔔 Қайта жазылу",
 
         # Notifications
         "clean_air_notification": "✨ <b>Ауа тазарды!</b>\n\nAQI: <b>{aqi}</b>\n📍 {location}\n\n💡 Үйді желдетуге немесе серуендеуге тамаша уақыт.",
@@ -725,6 +727,7 @@ LOCALES = {
         "no_subscriptions": "You don't have any active subscriptions yet.\n\nPress «🔔 Subscribe to Clean Air» to create a subscription.",
         "subscription_deleted": "✅ Subscription deleted.",
         "subscription_expired": "⏰ Your monitoring subscription has expired.\n\n📍 {location}\n\nYou can create a new subscription anytime.",
+        "resubscribe_button": "🔔 Subscribe again",
 
         # Notifications
         "clean_air_notification": "✨ <b>Air is clean now!</b>\n\nAQI: <b>{aqi}</b>\n📍 {location}\n\n💡 Great time to ventilate or go for a walk.",

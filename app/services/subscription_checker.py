@@ -228,11 +228,21 @@ async def send_expiration_notification(db: AsyncSession, bot: Bot, subscription:
             location=location_text
         )
 
+        # Create inline keyboard with resubscribe button
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(
+                text=get_text(lang, "resubscribe_button"),
+                callback_data=f"quick_subscribe:{subscription.latitude}:{subscription.longitude}"
+            )]
+        ])
+
         # Send notification
         await bot.send_message(
             chat_id=subscription.user_id,
             text=message_text,
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=keyboard
         )
 
         logger.info(f"Sent expiration notification to user {subscription.user_id} for subscription {subscription.id}")
