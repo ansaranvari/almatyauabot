@@ -7,6 +7,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.types import Update
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler
+from aiogram.fsm.storage.memory import MemoryStorage
 
 from app.core.config import get_settings
 from app.db.database import init_db
@@ -34,7 +35,8 @@ bot = Bot(
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
 
-dp = Dispatcher()
+# Initialize dispatcher with FSM storage
+dp = Dispatcher(storage=MemoryStorage())
 
 # Register middleware
 dp.message.middleware(I18nMiddleware())
