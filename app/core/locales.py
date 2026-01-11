@@ -114,6 +114,7 @@ LOCALES = {
 
         # Subscription saved
         "subscription_saved": "✅ <b>Подписка активирована!</b>\n\n📍 Станция: {station_name}\n⏰ Срок: {duration}\n🌙 Тихие часы: {quiet_hours}\n\nВы получите уведомление, когда воздух станет чистым (AQI ≤ 50).",
+        "subscription_saved_with_monitoring": "🔄 Также будете получать уведомление, если воздух ухудшится в течение 4 часов после очистки (AQI > 75).",
         "subscription_exists": "ℹ️ У вас уже есть подписка на это место.",
         "no_subscriptions": "У вас пока нет активных подписок.\n\nНажмите «🔔 Подписаться на чистый воздух» чтобы создать подписку.",
         "subscription_deleted": "✅ Подписка удалена.",
@@ -450,6 +451,7 @@ LOCALES = {
 
         # Subscription saved
         "subscription_saved": "✅ <b>Жазылым белсендірілді!</b>\n\n📍 Станция: {station_name}\n⏰ Мерзімі: {duration}\n🌙 Тыныш сағаттар: {quiet_hours}\n\nАуа таза болғанда (AQI ≤ 50) хабарландыру аласыз.",
+        "subscription_saved_with_monitoring": "🔄 Сондай-ақ ауа тазарғаннан кейін 4 сағат ішінде нашарласа хабарландыру аласыз (AQI > 75).",
         "subscription_exists": "ℹ️ Сізде осы жерге жазылым бар.",
         "no_subscriptions": "Сізде әзірге белсенді жазылымдар жоқ.\n\n«🔔 Таза ауаға жазылу» басып жазылым жасаңыз.",
         "subscription_deleted": "✅ Жазылым өшірілді.",
@@ -786,6 +788,7 @@ LOCALES = {
 
         # Subscription saved
         "subscription_saved": "✅ <b>Subscription activated!</b>\n\n📍 Station: {station_name}\n⏰ Duration: {duration}\n🌙 Quiet hours: {quiet_hours}\n\nYou'll receive a notification when air becomes clean (AQI ≤ 50).",
+        "subscription_saved_with_monitoring": "🔄 You'll also be notified if air becomes harmful again within 4 hours after it clears (AQI > 75).",
         "subscription_exists": "ℹ️ You already have a subscription for this location.",
         "no_subscriptions": "You don't have any active subscriptions yet.\n\nPress «🔔 Subscribe to Clean Air» to create a subscription.",
         "subscription_deleted": "✅ Subscription deleted.",

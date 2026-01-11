@@ -559,12 +559,19 @@ async def create_subscription(message: Message, state: FSMContext, lang: str, us
         # Format quiet hours for display
         quiet_hours_text = f"{mute_start:02d}:00 - {mute_end:02d}:00"
 
+        # Build confirmation message
+        confirmation_msg = get_text(lang, "subscription_saved").format(
+            station_name=station_name,
+            duration=duration_labels[duration_choice],
+            quiet_hours=quiet_hours_text
+        )
+
+        # Add auto-monitoring info if enabled
+        if auto_safety_net:
+            confirmation_msg += "\n\n" + get_text(lang, "subscription_saved_with_monitoring")
+
         await message.answer(
-            get_text(lang, "subscription_saved").format(
-                station_name=station_name,
-                duration=duration_labels[duration_choice],
-                quiet_hours=quiet_hours_text
-            ),
+            confirmation_msg,
             parse_mode="HTML",
             reply_markup=get_main_menu_keyboard(lang)
         )
