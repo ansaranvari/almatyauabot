@@ -301,6 +301,22 @@ async def handle_favorite_button(message: Message, bot: Bot, lang: str, user_id:
     await process_air_quality_check(message, bot, lang, user_id, latitude, longitude)
 
 
+@router.message(F.text.in_([
+    "📍 Отправить локацию", "📍 Локация жіберу", "📍 Send Location"
+]))
+async def handle_location_button_without_permission(message: Message, lang: str, **kwargs):
+    """
+    Handle when user clicks location button but hasn't granted permission
+
+    When permission is denied, Telegram sends button text instead of location
+    """
+    await message.answer(
+        get_text(lang, "location_permission_required"),
+        parse_mode="HTML",
+        reply_markup=get_main_menu_keyboard(lang)
+    )
+
+
 @router.message(F.location)
 async def handle_location(message: Message, bot: Bot, lang: str, user_id: int, **kwargs):
     """
