@@ -28,6 +28,7 @@ class SubscriptionStates(StatesGroup):
     entering_custom_hours = State()
     # Edit states
     editing_duration = State()
+    editing_notification_type = State()
     editing_quiet_hours = State()
     editing_custom_hours = State()
 
@@ -768,6 +769,10 @@ async def handle_edit_subscription(callback: CallbackQuery, state: FSMContext, l
                     callback_data=f"edit_menu:duration:{subscription_id}"
                 )],
                 [InlineKeyboardButton(
+                    text=get_text(lang, "edit_notification_type_button"),
+                    callback_data=f"edit_menu:notify_type:{subscription_id}"
+                )],
+                [InlineKeyboardButton(
                     text=get_text(lang, "edit_quiet_hours_button"),
                     callback_data=f"edit_menu:quiet:{subscription_id}"
                 )],
@@ -795,7 +800,7 @@ async def handle_edit_menu_selection(callback: CallbackQuery, state: FSMContext,
     """
     try:
         parts = callback.data.split(":")
-        edit_type = parts[1]  # "duration" or "quiet"
+        edit_type = parts[1]  # "duration", "notify_type", or "quiet"
         subscription_id = int(parts[2])
 
         # Store subscription ID in state
@@ -830,6 +835,27 @@ async def handle_edit_menu_selection(callback: CallbackQuery, state: FSMContext,
 
             await callback.message.edit_text(
                 get_text(lang, "duration_prompt"),
+                parse_mode="HTML",
+                reply_markup=keyboard
+            )
+
+        elif edit_type == "notify_type":
+            await state.set_state(SubscriptionStates.editing_notification_type)
+
+            # Show notification type selection
+            keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(
+                    text=get_text(lang, "notify_clean_only"),
+                    callback_data="edit_notify_type:clean_only"
+                )],
+                [InlineKeyboardButton(
+                    text=get_text(lang, "notify_with_safety_net"),
+                    callback_data="edit_notify_type:with_safety_net"
+                )],
+            ])
+
+            await callback.message.edit_text(
+                get_text(lang, "notification_type_prompt"),
                 parse_mode="HTML",
                 reply_markup=keyboard
             )
@@ -930,6 +956,59 @@ async def handle_edit_duration_selection(callback: CallbackQuery, state: FSMCont
             get_text(lang, "duration_updated").format(
                 duration=duration_labels[duration_choice]
             ),
+            parse_mode="HTML"
+        )
+
+        await callback.answer()
+
+    await state.clear()
+
+
+@router.callback_query(F.data.startswith("edit_notify_type:"), SubscriptionStates.editing_notification_type)
+async def handle_edit_notification_type_selection(callback: CallbackQuery, state: FSMContext, lang: str, user_id: int, **kwargs):
+    """
+    Handle notification type selection when editing
+
+    Updates only the auto_safety_net flag
+    """
+    notify_type = callback.data.split(":")[1]  # "clean_only" or "with_safety_net"
+    auto_safety_net = (notify_type == "with_safety_net")
+
+    # Update only notification type
+    user_data = await state.get_data()
+    subscription_id = user_data["edit_subscription_id"]
+
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(
+            select(Subscription).where(
+                Subscription.id == subscription_id,
+                Subscription.user_id == user_id
+            )
+        )
+        subscription = result.scalars().first()
+
+        if not subscription:
+            await callback.answer(
+                get_text(lang, "subscription_not_found"),
+                show_alert=True
+            )
+            await state.clear()
+            return
+
+        # Update only auto_safety_net
+        subscription.auto_safety_net = auto_safety_net
+        await db.commit()
+
+        logger.info(f"User {user_id} updated notification type for subscription {subscription_id}: auto_safety_net={auto_safety_net}")
+
+        # Determine which message to show
+        if auto_safety_net:
+            confirmation_msg = get_text(lang, "notification_type_updated_with_monitoring")
+        else:
+            confirmation_msg = get_text(lang, "notification_type_updated_clean_only")
+
+        await callback.message.edit_text(
+            confirmation_msg,
             parse_mode="HTML"
         )
 

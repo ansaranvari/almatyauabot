@@ -182,9 +182,12 @@ LOCALES = {
         # Edit menu
         "edit_menu_prompt": "⚙️ <b>Что вы хотите изменить?</b>",
         "edit_duration_button": "⏰ Срок подписки",
+        "edit_notification_type_button": "🔔 Тип уведомлений",
         "edit_quiet_hours_button": "🌙 Тихие часы",
         "subscription_updated": "✅ Настройки обновлены!\n\n⏰ Срок: {duration}\n🌙 Тихие часы: {quiet_hours}",
         "duration_updated": "✅ Срок обновлён: {duration}",
+        "notification_type_updated_clean_only": "✅ Настройки обновлены!\n\nВы будете получать уведомления только когда воздух очистится.",
+        "notification_type_updated_with_monitoring": "✅ Настройки обновлены!\n\nВы будете получать уведомления:\n• Когда воздух очистится\n• Если воздух ухудшится в течение 4ч после очистки",
         "quiet_hours_updated": "✅ Тихие часы обновлены: {quiet_hours}",
 
         # Info Buttons
@@ -519,9 +522,12 @@ LOCALES = {
         # Edit menu
         "edit_menu_prompt": "⚙️ <b>Нені өзгерткіңіз келеді?</b>",
         "edit_duration_button": "⏰ Жазылым мерзімі",
+        "edit_notification_type_button": "🔔 Хабарландыру түрі",
         "edit_quiet_hours_button": "🌙 Тыныш сағаттар",
         "subscription_updated": "✅ Баптаулар жаңартылды!\n\n⏰ Мерзімі: {duration}\n🌙 Тыныш сағаттар: {quiet_hours}",
         "duration_updated": "✅ Мерзімі жаңартылды: {duration}",
+        "notification_type_updated_clean_only": "✅ Баптаулар жаңартылды!\n\nТек ауа тазарғанда хабарландыру аласыз.",
+        "notification_type_updated_with_monitoring": "✅ Баптаулар жаңартылды!\n\nХабарландырулар аласыз:\n• Ауа тазарғанда\n• Тазарғаннан кейін 4 сағат ішінде ауа нашарласа",
         "quiet_hours_updated": "✅ Тыныш сағаттар жаңартылды: {quiet_hours}",
 
         # Info Buttons
@@ -856,9 +862,12 @@ LOCALES = {
         # Edit menu
         "edit_menu_prompt": "⚙️ <b>What would you like to change?</b>",
         "edit_duration_button": "⏰ Subscription Duration",
+        "edit_notification_type_button": "🔔 Notification Type",
         "edit_quiet_hours_button": "🌙 Quiet Hours",
         "subscription_updated": "✅ Settings updated!\n\n⏰ Duration: {duration}\n🌙 Quiet hours: {quiet_hours}",
         "duration_updated": "✅ Duration updated: {duration}",
+        "notification_type_updated_clean_only": "✅ Settings updated!\n\nYou'll only receive notifications when air becomes clean.",
+        "notification_type_updated_with_monitoring": "✅ Settings updated!\n\nYou'll receive notifications:\n• When air becomes clean\n• If air becomes harmful again within 4h after it clears",
         "quiet_hours_updated": "✅ Quiet hours updated: {quiet_hours}",
 
         # Info Buttons
