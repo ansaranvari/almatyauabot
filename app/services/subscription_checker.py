@@ -292,23 +292,39 @@ async def send_clean_air_notification(
             location=location_name
         )
 
-        # Add safety net button
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(
-                text=get_text(lang, "alert_if_bad_button"),
-                callback_data=f"safety_net:{subscription.id}"
-            )]
-        ])
-
-        # Send notification
+        # Send notification (no button needed anymore)
         await bot.send_message(
             chat_id=subscription.user_id,
             text=message_text,
-            parse_mode="HTML",
-            reply_markup=keyboard
+            parse_mode="HTML"
         )
 
         logger.info(f"Sent clean air notification to user {subscription.user_id}")
+
+        # Auto-create 4h safety net if enabled
+        if subscription.auto_safety_net:
+            from datetime import datetime, timedelta
+
+            # Check if safety net session already exists
+            existing_session = await db.execute(
+                select(SafetyNetSession).where(
+                    SafetyNetSession.subscription_id == subscription.id,
+                    SafetyNetSession.session_expiry > datetime.utcnow()
+                )
+            )
+            if existing_session.scalars().first():
+                logger.info(f"Safety net already active for subscription {subscription.id}")
+            else:
+                # Create new 4h safety net session
+                safety_net = SafetyNetSession(
+                    user_id=subscription.user_id,
+                    subscription_id=subscription.id,
+                    start_aqi=station.aqi,
+                    session_expiry=datetime.utcnow() + timedelta(hours=4)
+                )
+                db.add(safety_net)
+                await db.commit()
+                logger.info(f"Auto-created 4h safety net for subscription {subscription.id}")
 
     except Exception as e:
         logger.error(f"Error sending notification to user {subscription.user_id}: {e}", exc_info=True)

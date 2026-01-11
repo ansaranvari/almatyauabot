@@ -92,6 +92,9 @@ class Subscription(Base):
     mute_start = Column(Integer, default=23, nullable=False)  # Hour (0-23) when quiet hours start
     mute_end = Column(Integer, default=7, nullable=False)  # Hour (0-23) when quiet hours end
 
+    # Notification preferences
+    auto_safety_net = Column(Boolean, default=False, nullable=False)  # Auto-create 4h safety net after clean air notification
+
     # Notification tracking
     last_notified_at = Column(DateTime, nullable=True)  # When user was last notified
     last_aqi_level = Column(Integer, nullable=True)  # Last known AQI to detect transitions

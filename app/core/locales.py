@@ -95,6 +95,16 @@ LOCALES = {
         "duration_7d": "7 дней",
         "duration_forever": "♾️ Бессрочно",
 
+        # Notification type
+        "notification_type_prompt": (
+            "🔔 <b>Настройка уведомлений</b>\n\n"
+            "Вы всегда будете получать уведомление, когда воздух очистится.\n\n"
+            "Хотите ли вы также получать уведомление, если воздух вновь станет вредным "
+            "(в течение 4ч после очистки)?"
+        ),
+        "notify_clean_only": "✨ Только чистый воздух",
+        "notify_with_safety_net": "🔄 + Следить за ухудшением (4ч)",
+
         # Quiet hours
         "quiet_hours_prompt": "🌙 <b>Тихие часы</b>\n\nНе беспокоить между 23:00 и 07:00?",
         "quiet_hours_yes": "✅ Да, не беспокоить",
@@ -421,6 +431,16 @@ LOCALES = {
         "duration_7d": "7 күн",
         "duration_forever": "♾️ Мерзімсіз",
 
+        # Notification type
+        "notification_type_prompt": (
+            "🔔 <b>Хабарландыруларды баптау</b>\n\n"
+            "Сіз әрқашан ауа тазарғанда хабарландыру аласыз.\n\n"
+            "Ауа қайтадан зиянды болса хабарландыру алғыңыз келе ме "
+            "(тазарғаннан кейін 4 сағат ішінде)?"
+        ),
+        "notify_clean_only": "✨ Тек таза ауа",
+        "notify_with_safety_net": "🔄 + Нашарлауды бақылау (4с)",
+
         # Quiet hours
         "quiet_hours_prompt": "🌙 <b>Тыныш сағаттар</b>\n\n23:00 мен 07:00 арасында мазаламау керек пе?",
         "quiet_hours_yes": "✅ Иә, мазаламау",
@@ -746,6 +766,16 @@ LOCALES = {
         "duration_3d": "3 days",
         "duration_7d": "7 days",
         "duration_forever": "♾️ Forever",
+
+        # Notification type
+        "notification_type_prompt": (
+            "🔔 <b>Notification Settings</b>\n\n"
+            "You will always receive a notification when the air becomes clean.\n\n"
+            "Would you also like to receive a notification if the air becomes harmful again "
+            "(within 4h after it clears)?"
+        ),
+        "notify_clean_only": "✨ Clean air only",
+        "notify_with_safety_net": "🔄 + Monitor for worsening (4h)",
 
         # Quiet hours
         "quiet_hours_prompt": "🌙 <b>Quiet hours</b>\n\nDo not disturb between 11 PM and 7 AM?",

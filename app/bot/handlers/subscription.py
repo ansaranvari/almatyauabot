@@ -23,6 +23,7 @@ class SubscriptionStates(StatesGroup):
     """FSM states for subscription flow"""
     waiting_for_location = State()
     choosing_duration = State()
+    choosing_notification_type = State()
     choosing_quiet_hours = State()
     entering_custom_hours = State()
     # Edit states
@@ -376,6 +377,40 @@ async def handle_duration_selection(callback: CallbackQuery, state: FSMContext, 
 
     # Store duration choice
     await state.update_data(expiry_date=expiry_date, duration_choice=duration_choice)
+    await state.set_state(SubscriptionStates.choosing_notification_type)
+
+    # Show notification type prompt
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(
+            text=get_text(lang, "notify_clean_only"),
+            callback_data="notify_type:clean_only"
+        )],
+        [InlineKeyboardButton(
+            text=get_text(lang, "notify_with_safety_net"),
+            callback_data="notify_type:with_safety_net"
+        )],
+    ])
+
+    await callback.message.edit_text(
+        get_text(lang, "notification_type_prompt"),
+        parse_mode="HTML",
+        reply_markup=keyboard
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("notify_type:"), SubscriptionStates.choosing_notification_type)
+async def handle_notification_type_selection(callback: CallbackQuery, state: FSMContext, lang: str, **kwargs):
+    """
+    Handle notification type selection - Step C (new)
+
+    Stores auto_safety_net preference and moves to quiet hours configuration
+    """
+    notify_type = callback.data.split(":")[1]  # "clean_only" or "with_safety_net"
+
+    # Store notification type choice
+    auto_safety_net = (notify_type == "with_safety_net")
+    await state.update_data(auto_safety_net=auto_safety_net)
     await state.set_state(SubscriptionStates.choosing_quiet_hours)
 
     # Show quiet hours prompt
@@ -469,6 +504,7 @@ async def create_subscription(message: Message, state: FSMContext, lang: str, us
     duration_choice = user_data["duration_choice"]
     mute_start = user_data["mute_start"]
     mute_end = user_data["mute_end"]
+    auto_safety_net = user_data.get("auto_safety_net", False)
 
     async with AsyncSessionLocal() as db:
         # Find nearest station to show name in confirmation
@@ -489,6 +525,7 @@ async def create_subscription(message: Message, state: FSMContext, lang: str, us
             expiry_date=expiry_date,
             mute_start=mute_start,
             mute_end=mute_end,
+            auto_safety_net=auto_safety_net,
             is_active=True
         )
 
