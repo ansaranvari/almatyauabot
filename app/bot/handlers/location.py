@@ -2,6 +2,8 @@ import logging
 from aiogram import Router, F, Bot
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
 from aiogram.enums import ChatAction
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.db.database import AsyncSessionLocal
@@ -15,10 +17,15 @@ router = Router()
 logger = logging.getLogger(__name__)
 
 
+class LocationStates(StatesGroup):
+    """FSM states for location flow"""
+    waiting_for_location = State()
+
+
 @router.message(F.text.in_([
     "🔍 Проверить качество воздуха", "🔍 Ауа сапасын тексеру", "🔍 Check Air Quality"
 ]))
-async def cmd_check_air(message: Message, lang: str, user_id: int, **kwargs):
+async def cmd_check_air(message: Message, state: FSMContext, lang: str, user_id: int, **kwargs):
     """
     Handle 'Check Air' button
 
@@ -59,6 +66,9 @@ async def cmd_check_air(message: Message, lang: str, user_id: int, **kwargs):
         favorites = favorites_result.scalars().all()
 
     # Regular flow - prompt for location
+    # Set state to track if user has location permission issues
+    await state.set_state(LocationStates.waiting_for_location)
+
     await message.answer(
         get_text(lang, "send_location"),
         reply_markup=get_location_keyboard(lang, favorites=favorites)
@@ -66,7 +76,7 @@ async def cmd_check_air(message: Message, lang: str, user_id: int, **kwargs):
 
 
 @router.callback_query(F.data == "onboarding_check_done")
-async def handle_onboarding_check_done(callback: CallbackQuery, lang: str, user_id: int, **kwargs):
+async def handle_onboarding_check_done(callback: CallbackQuery, state: FSMContext, lang: str, user_id: int, **kwargs):
     """Mark check air onboarding as seen and show location prompt"""
     from app.db.models import User, FavoriteLocation
 
@@ -87,6 +97,9 @@ async def handle_onboarding_check_done(callback: CallbackQuery, lang: str, user_
         favorites = favorites_result.scalars().all()
 
     # Show location prompt
+    # Set state to track if user has location permission issues
+    await state.set_state(LocationStates.waiting_for_location)
+
     await callback.message.answer(
         get_text(lang, "send_location"),
         reply_markup=get_location_keyboard(lang, favorites=favorites)
@@ -301,15 +314,19 @@ async def handle_favorite_button(message: Message, bot: Bot, lang: str, user_id:
     await process_air_quality_check(message, bot, lang, user_id, latitude, longitude)
 
 
-@router.message(F.text.in_([
-    "📍 Отправить локацию", "📍 Локация жіберу", "📍 Send Location"
-]))
-async def handle_location_button_without_permission(message: Message, lang: str, **kwargs):
+@router.message(
+    F.text.in_([
+        "📍 Отправить локацию", "📍 Локация жіберу", "📍 Send Location"
+    ]),
+    LocationStates.waiting_for_location
+)
+async def handle_location_button_without_permission(message: Message, state: FSMContext, lang: str, **kwargs):
     """
     Handle when user clicks location button but hasn't granted permission
 
     When permission is denied, Telegram sends button text instead of location
     """
+    await state.clear()
     await message.answer(
         get_text(lang, "location_permission_required"),
         parse_mode="HTML",
@@ -318,7 +335,7 @@ async def handle_location_button_without_permission(message: Message, lang: str,
 
 
 @router.message(F.location)
-async def handle_location(message: Message, bot: Bot, lang: str, user_id: int, **kwargs):
+async def handle_location(message: Message, state: FSMContext, bot: Bot, lang: str, user_id: int, **kwargs):
     """
     Handle user's location
 
@@ -331,12 +348,16 @@ async def handle_location(message: Message, bot: Bot, lang: str, user_id: int, *
             get_text(lang, "invalid_location"),
             reply_markup=get_main_menu_keyboard(lang)
         )
+        await state.clear()
         return
 
     latitude = location.latitude
     longitude = location.longitude
 
     logger.info(f"User {user_id} requesting air quality for: {latitude}, {longitude}")
+
+    # Clear state since we successfully received location
+    await state.clear()
 
     # Show typing indicator
     await bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
