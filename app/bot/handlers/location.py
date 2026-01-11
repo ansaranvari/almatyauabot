@@ -31,6 +31,8 @@ async def cmd_check_air(message: Message, state: FSMContext, lang: str, user_id:
 
     Shows onboarding for first-time users, then prompts to send location
     """
+    logger.info(f"cmd_check_air called for user {user_id}")
+
     # Track check air feature usage
     await analytics.track_event(user_id, "check_air_clicked")
     await analytics.increment_feature_usage("check_air", user_id)
@@ -68,6 +70,7 @@ async def cmd_check_air(message: Message, state: FSMContext, lang: str, user_id:
     # Regular flow - prompt for location
     # Set state to track if user has location permission issues
     await state.set_state(LocationStates.waiting_for_location)
+    logger.info(f"Set state to waiting_for_location for user {user_id}")
 
     await message.answer(
         get_text(lang, "send_location"),
@@ -320,12 +323,13 @@ async def handle_favorite_button(message: Message, bot: Bot, lang: str, user_id:
     ]),
     LocationStates.waiting_for_location
 )
-async def handle_location_button_without_permission(message: Message, state: FSMContext, lang: str, **kwargs):
+async def handle_location_button_without_permission(message: Message, state: FSMContext, lang: str, user_id: int, **kwargs):
     """
     Handle when user clicks location button but hasn't granted permission
 
     When permission is denied, Telegram sends button text instead of location
     """
+    logger.info(f"Location button clicked without permission for user {user_id}, text: '{message.text}'")
     await state.clear()
     await message.answer(
         get_text(lang, "location_permission_required"),
